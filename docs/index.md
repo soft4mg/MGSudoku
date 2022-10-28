@@ -11,7 +11,7 @@ As the name suggests MGSudoku is a sudoku game. This is a private none-commercia
 
 ## Privacy
 
-see [Privacy page](./provacy.md)
+see [Privacy page](./privacy.md)
 
 ## History
 
