@@ -116,7 +116,7 @@ public class GameModel extends Observable {
             for (int j = 1; j <= dimension2; j++) {
                 CellModel cellModel = cellModels[cellIndex(i,j)];
                 if (cellModel.getValue() == 0) return false;
-                if (correct && (cellModel.value != cellModel.solution)) return false; // if correct is requested, then check against solution value
+                if (correct && (cellModel.getValue() != cellModel.getSolution())) return false; // if correct is requested, then check against solution value
                 solution += " "+cellModels[cellIndex(i,j)].getText();
             }
             solution += "\n";
@@ -239,8 +239,8 @@ public class GameModel extends Observable {
     }
     public void unsetCandidatesForCell(CellModel cellModel){
         CellModel[] cellGroup = new CellModel[dimension2+1];
-        int i = cellModel.row;
-        int j = cellModel.column;
+        int i = cellModel.getRow();
+        int j = cellModel.getColumn();
         unsetCandidateForCellGroup( getRowGroup(i, j, cellGroup), cellModel.getValue());
         unsetCandidateForCellGroup( getColumnGroup(i, j, cellGroup), cellModel.getValue());
         unsetCandidateForCellGroup( getBoxGroup(i, j, cellGroup), cellModel.getValue());
@@ -256,14 +256,16 @@ public class GameModel extends Observable {
         ArrayList<CellModel> list = new ArrayList<>();
         if ((selected != null ) && selected.hasChanged()){
             list.add(new CellModel(selected));
-            selected.unsetChanged();
+            selected.setChanged(false);
+//            selected.unsetChanged();
         }
         for (int i = 1; i <= dimension2; i++){
             for (int j = 1; j <= dimension2; j++) {
                 CellModel cellModel = getCellModel(i,j);
                 if (all || cellModel.hasChanged()){
                     list.add(new CellModel(cellModel));
-                    cellModel.unsetChanged();
+                    cellModel.setChanged(false);
+//                    cellModel.unsetChanged();
                 }
             }
         }

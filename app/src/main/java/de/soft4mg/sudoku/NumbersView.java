@@ -122,7 +122,7 @@ public class NumbersView extends RelativeLayout {
             if (getChildAt(cIdx) instanceof CellView) {
                 CellView cellView = (CellView) getChildAt(cIdx);
                 CellModel cellModel = cellView.cellModel;
-                cellModel.setEnabled(gameModel.getNumValue(cellModel.value) != gameModel.dimension2);
+                cellModel.setEnabled(gameModel.getNumValue(cellModel.getValue()) != gameModel.dimension2);
                 cellView.invalidate();
             }
         }

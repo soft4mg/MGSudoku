@@ -82,7 +82,7 @@ public class Permutation {
                 cellModel.setValue( permutationVector[cellModelClone.getValue()] );
                 cellModel.setSolution( permutationVector[cellModelClone.getSolution()] );
 
-                cellModel.candidates = 0;
+                cellModel.setCandidates(0);
                 for (int c = 1; c <= gameModel.dimension2; c++) { // iterate candidates
                     if (cellModelClone.isCandidate(c)){
                         cellModel.toggleCandidate(permutationVector[c]);

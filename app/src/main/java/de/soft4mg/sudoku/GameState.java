@@ -92,18 +92,18 @@ public class GameState {
 
     public boolean isSelected(CellModel cellModel){
         if (selectedCell == null) return false;
-        if ((selectedCell.row == cellModel.row) && (selectedCell.column == cellModel.column)) return true;
+        if ((selectedCell.getRow() == cellModel.getRow()) && (selectedCell.getColumn() == cellModel.getColumn())) return true;
         return false;
     }
     public boolean isSelectedRowOrColumn(CellModel cellModel){
         if (selectedCell == null) return false;
-        if ((selectedCell.row == cellModel.row) || (selectedCell.column == cellModel.column)) return true;
+        if ((selectedCell.getRow() == cellModel.getRow()) || (selectedCell.getColumn() == cellModel.getColumn())) return true;
         return false;
     }
     public boolean isSelectedValue(int value){
         if (selectedCell == null) return false;
         if (value == 0) return false;
-        if ((selectedCell.value == value)) return true;
+        if ((selectedCell.getValue() == value)) return true;
         return false;
     }
 
@@ -118,11 +118,11 @@ public class GameState {
             List<CellModel> undoCellModels = undoList.remove(undoList.size()-1);
             for (CellModel undoCellModel : undoCellModels){
                 CellModel oldCellModel = previous(undoCellModel);
-                gameModel.getCellModel(undoCellModel.row, undoCellModel.column).copyFrom(oldCellModel);
+                gameModel.getCellModel(undoCellModel.getRow(), undoCellModel.getColumn()).copyFrom(oldCellModel);
             }
             if (undoCellModels.size() > 0){
 //                selectedCell = undoCellModels.get(0);
-                selectedCell = gameModel.getCellModel(undoCellModels.get(0).row, undoCellModels.get(0).column);
+                selectedCell = gameModel.getCellModel(undoCellModels.get(0).getRow(), undoCellModels.get(0).getColumn());
             }
         }
     }
@@ -131,7 +131,7 @@ public class GameState {
         for (int i=undoList.size()-1; i>=0; i--){
             List<CellModel> changeList = undoList.get(i);
             for (CellModel changedCellModel : changeList){
-                if ((changedCellModel.row == cellModel.row) && (changedCellModel.column == cellModel.column)){
+                if ((changedCellModel.getRow() == cellModel.getRow()) && (changedCellModel.getColumn() == cellModel.getColumn())){
                     return changedCellModel;
                 }
             }

@@ -21,39 +21,40 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-import java.util.Observable;
-
-public class CellModel extends Observable {
+public class CellModel {
 
     int dimension;
     @JSONField(name="Row", ordinal=1)
-    int row;
+    private int row;
     @JSONField(name="Col", ordinal=2)
-    int column;
+    private int column;
     @JSONField(name="Value", ordinal=3)
-    int value = 0; // 0 means not yet set
+    private int value = 0; // 0 means not yet set
     @JSONField(name="Candidates", ordinal=4)
-    int candidates;
+    private int candidates;
     @JSONField(name="Initial", ordinal=5)
-    boolean initial = false;
+    private boolean initial = false;
     @JSONField(name="Sol", ordinal=6)
-    int solution = 0;
+    private int solution = 0;
     @JSONField(name="Mark1", ordinal=7)
     private int mark1 = 0;
     @JSONField(name="Mark2", ordinal=8)
     private int mark2 = 0;
     @JSONField(serialize=false)
-    boolean enabled = true;
+    private boolean enabled = true;
+    @JSONField(name="Changed")
+    private boolean changed = true;
 
 
 
     public CellModel(int dimension, int row, int column){
         this.dimension = dimension;
-        this.row = row;
-        this.column = column;
+        this.setRow(row);
+        this.setColumn(column);
         this.initCandidates();
     }
 
+    @SuppressWarnings("CopyConstructorMissesField")
     public CellModel(CellModel cellModel){
         this(cellModel.dimension, cellModel.row, cellModel.column);
         value = cellModel.value;
@@ -63,6 +64,8 @@ public class CellModel extends Observable {
         mark1 = cellModel.getMark1();
         mark2 = cellModel.getMark2();
     }
+
+    @SuppressWarnings("unused") // required for JSON
     public CellModel(){}
 
     public void copyFrom(CellModel cellModel){
@@ -73,7 +76,7 @@ public class CellModel extends Observable {
             solution = cellModel.solution;
             mark1 = cellModel.getMark1();
             mark2 = cellModel.getMark2();
-            unsetChanged();
+            setChanged(false);
         }
     }
 
@@ -138,7 +141,6 @@ public class CellModel extends Observable {
         if (this.value != value){
             this.value = value;
             this.setChanged();
-//            this.notifyObservers();
         }
     }
 
@@ -149,7 +151,6 @@ public class CellModel extends Observable {
         if (this.enabled != enabled){
             this.enabled = enabled;
             this.setChanged();
-//            this.notifyObservers();
         }
     }
 
@@ -183,17 +184,10 @@ public class CellModel extends Observable {
     boolean isCandidateIn(int value, Integer bitarray){
         return (candidateBit(value) & bitarray) != 0;
     }
-    public int unsetCandidateIn(int value, Integer bitarray){
-        if (( bitarray & candidateBit(value) ) != 0){ // bit is yet set
-            toggleCandidateIn(value, bitarray);
-        }
-        return bitarray;
-    }
     public int toggleCandidateIn(int candidate, Integer bitarray){
         int bit = candidateBit(candidate);
         bitarray ^= bit; // toggle bit
         this.setChanged();
-//        this.notifyObservers();
         return bitarray;
     }
 
@@ -210,51 +204,20 @@ public class CellModel extends Observable {
         int bit = candidateBit(candidate);
         this.candidates ^= bit; // toggle bit
         this.setChanged();
-//        this.notifyObservers();
-    }
-
-    @JSONField(serialize=false)
-    public int getNumberOfCandidates(){
-        return getNumberOfCandidates(candidates);
-    }
-    public static int getNumberOfCandidates(int candidates){
-        int num = 0;
-        while (candidates != 0){
-            if ((candidates & 0x1) == 1) num++;
-            candidates = candidates / 2;
-        }
-        return num;
-    }
-
-    public int getCandidate(int n){
-        int num = 0;
-        for (int i=1; i<=dimension*dimension; i++){
-            if (isCandidate(i)) {
-                num++;
-                if (num == n) return i;
-            }
-        }
-        return 0;
-    }
-    public boolean unsetCandidateGroup(int candidatesGroup){
-        if (value == 0){
-            int newCandidates = candidates & ~candidatesGroup;
-            if ((newCandidates != 0) && (newCandidates != candidates)){
-                candidates &= ~candidatesGroup;
-                setChanged();
-//                notifyObservers();
-                return true;
-            }
-        }
-        return false;
     }
 
     public void initCandidates(){
         candidates = (1 << (dimension*dimension)) -1;
     }
 
-    void unsetChanged(){
-        clearChanged();
+    public boolean hasChanged() {
+        return changed;
+    }
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
+    public void setChanged() {
+        setChanged(true);
     }
 
     @NonNull
@@ -270,6 +233,8 @@ public class CellModel extends Observable {
                 ", solution=" + solution +
                 ", mark1=" + mark1 +
                 ", mark2=" + mark2 +
+                ", enabled=" + enabled +
+                ", changed=" + changed +
                 '}';
     }
 

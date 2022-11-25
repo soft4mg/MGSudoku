@@ -29,7 +29,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import java.util.Observable;
 import java.util.Observer;
 
-public class CellView extends AppCompatTextView implements Observer {
+public class CellView extends AppCompatTextView {
 
     GameState gameState;
     CellModel cellModel;
@@ -65,7 +65,7 @@ public class CellView extends AppCompatTextView implements Observer {
         cDimS = (cDim -4* cBod2) / gDim;
 
         drawBg(canvas);
-        if (cellModel.value != 0){
+        if (cellModel.getValue() != 0){
             drawValue(canvas);
         } else if ( preferences.getBoolean(getResources().getString(R.string.prefShowCandidates), true)){
             drawCandidates(canvas);
@@ -75,13 +75,13 @@ public class CellView extends AppCompatTextView implements Observer {
 
     private void drawValue(Canvas canvas){
         int colorId = cellModel.isInitial()?R.color.sd_number_init:R.color.sd_number;
-        colorId = ((cellModel.value!=cellModel.solution)&&(cellModel.solution!=0))?R.color.sd_number_error:colorId;
-        if (!cellModel.enabled)
+        colorId = ((cellModel.getValue() != cellModel.getSolution())&&(cellModel.getSolution() !=0))?R.color.sd_number_error:colorId;
+        if (!cellModel.isEnabled())
             colorId = R.color.sd_number_disabled;
         else colorId = colorId;
         canvas.drawText(cellModel.getText(),
                 cDim / 2 - details.charWidthL/2,
-                cDim / 2 + details.charDimsL[cellModel.value].height()/2,
+                cDim / 2 + details.charDimsL[cellModel.getValue()].height()/2,
                 details.paintWithColor(details.paintTextL, colorId));
     }
     private void drawCandidates(Canvas canvas){
@@ -157,9 +157,9 @@ public class CellView extends AppCompatTextView implements Observer {
         p.lineTo(cDim - cBod2, cBod2);
         p.lineTo(cBod2, cBod2);
         int colorId = gameState.isSelectedRowOrColumn(cellModel)?R.color.sd_bg_sel_row_col:R.color.sd_bg;
-        colorId = gameState.isSelectedValue(cellModel.value)?R.color.sd_bg_sel_value:colorId;
+        colorId = gameState.isSelectedValue(cellModel.getValue())?R.color.sd_bg_sel_value:colorId;
         colorId = gameState.isSelected(cellModel)?R.color.sd_bg_sel_cell:colorId;
-        colorId = cellModel.row==0?R.color.sd_bg:colorId; // for numbersView
+        colorId = cellModel.getRow()==0?R.color.sd_bg:colorId; // for numbersView
         canvas.drawPath(p, details.paintWithColor(details.paintBg, colorId));
     }
     private void drawBorder(Canvas canvas){
@@ -173,13 +173,13 @@ public class CellView extends AppCompatTextView implements Observer {
     }
 
 
-    @Override
-    public void update(Observable observable, Object o) {
-        if (observable instanceof CellModel) {
-            CellModel cellModel = (CellModel) observable;
-            this.invalidate();
-        }
-    }
+//    @Override
+//    public void update(Observable observable, Object o) {
+//        if (observable instanceof CellModel) {
+//            CellModel cellModel = (CellModel) observable;
+//            this.invalidate();
+//        }
+//    }
 
 
 

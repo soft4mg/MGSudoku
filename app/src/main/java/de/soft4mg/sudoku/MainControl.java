@@ -75,7 +75,13 @@ public class MainControl {
 
     public void onResume(){
         String sGameState = prefUtil.getString(R.string.stateGameControl, null);
-        if (sGameState==null){
+
+        if (sGameState!=null) {
+            gameState = JSON.parseObject(sGameState, GameState.class);
+        }
+        if (gameState != null){
+            onNewGameState();
+        } else {
             new Thread(() -> {
                 synchronized (this){
                     while (!gameMapLoaded){
@@ -85,9 +91,6 @@ public class MainControl {
                 gameState = startNewGame();
                 mainActivity.runOnUiThread(this::onNewGameState);
             }).start();
-        } else {
-            gameState = JSON.parseObject(sGameState, GameState.class);
-            onNewGameState();
         }
     }
 
@@ -210,7 +213,7 @@ public class MainControl {
                         if (selectedCellModel.getValue() !=  selectedCellModel.getSolution()){
                             if (  gameModel.getNumValue(number) < gameModel.dimension2 ){
                                 gameModel.setValue(selectedCellModel, number);
-                                if (selectedCellModel.value != selectedCellModel.solution){
+                                if (selectedCellModel.getValue() != selectedCellModel.getSolution()){
                                     gameState.setErrorCounter( gameState.getErrorCounter()+1 );
                                     mainView.controlView.setGameErrors(gameState.getErrorCounter());
                                     mainView.controlView.setPoints(gameState.getGamePoints(null));
