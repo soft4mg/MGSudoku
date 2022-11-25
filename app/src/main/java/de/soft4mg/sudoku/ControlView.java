@@ -17,6 +17,7 @@
  */
 package de.soft4mg.sudoku;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.widget.Button;
@@ -26,8 +27,7 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
-import de.soft4mg.sudoku.R;
-
+@SuppressLint("ViewConstructor")
 public class ControlView extends RelativeLayout {
 
     TextDetails textDetails;
@@ -91,15 +91,10 @@ public class ControlView extends RelativeLayout {
         });
         GameLevel gameLevel = GameLevel.valueOf( prefUtil.getString(R.string.prefLevel, GameLevel.MEDIUM.toString()) );
         Button btLevel = textDetails.createButton(this,34,0, 32, 14, getLevelText(), 4f);
-        btLevel.setOnClickListener(vaiew -> {
-            showLevelDialog(btLevel);
-        });
+        btLevel.setOnClickListener(view -> showLevelDialog(btLevel));
 
         Button btHelp = textDetails.createButton(this,66,0, 33, 14, "Help", 4f);
-        btHelp.setOnClickListener(v -> {
-            controlViewListener.showHelpRequested();
-//            Toast.makeText(textDetails.context,"Not yet implemented",Toast.LENGTH_LONG).show();
-        });
+        btHelp.setOnClickListener(v -> controlViewListener.showHelpRequested());
 
 
 
@@ -111,12 +106,8 @@ public class ControlView extends RelativeLayout {
                     .setCancelable(false)
                     .setSingleChoiceItems(GameLevel.stringValues(), gameLevel.ordinal(),null)
                     .setMessage("Don't use candidates and double points ????")
-                    .setPositiveButton("Double Points", (dialog, id) -> {
-                        startNewGame(false);
-                    })
-                    .setNegativeButton("No thanks", (dialog, id) -> {
-                        startNewGame(true);
-                    });
+                    .setPositiveButton("Double Points", (dialog, id) -> startNewGame(false))
+                    .setNegativeButton("No thanks", (dialog, id) -> startNewGame(true));
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
 
@@ -131,16 +122,12 @@ public class ControlView extends RelativeLayout {
         });
 
         Button btStat = textDetails.createButton(this,66,12, 33, 14, "Statistic", 4f);
-        btStat.setOnClickListener(v -> {
-            new StatisticDialog().showStatisticDialog(context);
-        });
+        btStat.setOnClickListener(v -> new StatisticDialog().showStatisticDialog(context));
 
         textDetails.createButton(this,1,24, 33, 14, "Init\nCandidates", 4f).setOnClickListener(view -> controlViewListener.initCandidatesRequested());
 
         Button btUndo = textDetails.createButton(this,34,24, 32, 14, "Undo", 4f);
-        btUndo.setOnClickListener(v -> {
-            controlViewListener.undoRequested();
-        });
+        btUndo.setOnClickListener(v -> controlViewListener.undoRequested());
 
         textDetails.createButton(this,66,24, 33, 14, "Clear\nMarker", 4f).setOnClickListener(view -> controlViewListener.clearMarkerRequested());
 
