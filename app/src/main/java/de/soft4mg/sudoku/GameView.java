@@ -46,7 +46,7 @@ public class GameView extends RelativeLayout{
         View.OnClickListener ocl = view -> {
             if (view instanceof CellView) {
                 CellView cellView = (CellView) view;
-                gameState.selectedCell = cellView.cellModel;
+                gameState.setSelectedCell(cellView.cellModel);
                 invalidate();
             }
         };

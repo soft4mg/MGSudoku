@@ -51,11 +51,11 @@ public class MainControl {
     TimerTask ttSecend = new TimerTask() {
         @Override
         public void run() {
-            if (!gameState.isFinished()){
+            if (gameState.isNotFinished()){
                 timer.postDelayed(ttSecend, 1000);
-                ++gameState.secondsPlayed;
+                gameState.setSecondsPlayed(gameState.getSecondsPlayed() + 1);
                 if (mainView.controlView != null){
-                    mainView.controlView.setGameDuration(gameState.secondsPlayed);
+                    mainView.controlView.setGameDuration(gameState.getSecondsPlayed());
                 }
             }
         }
@@ -157,21 +157,21 @@ public class MainControl {
 
         @Override
         public void initCandidatesRequested() {
-            gameState.gameModel.initCandidates();
+            gameState.getGameModel().initCandidates();
             recordUndoStep();
             mainView.gameView.invalidate();
         }
 
         @Override
         public void clearMarkerRequested() {
-            gameState.gameModel.clearMarker();
+            gameState.getGameModel().clearMarker();
             mainView.gameView.invalidate();
         }
 
         @Override
         public void showCandidatesRequested(boolean show) {
             gameState.setCandidatesUsed(gameState.isCandidatesUsed() | show);
-            mainView.controlView.setPoints(gameState.getGamePoints(null));
+            mainView.controlView.setPoints(gameState.getGamePoints());
         }
 
         @Override
@@ -183,10 +183,10 @@ public class MainControl {
     NumbersListener numbersListener = new NumbersListener() {
         @Override
         public void numberPressed(int number, NumberAction numberAction) {
-            if (!gameState.isFinished() && (gameState.selectedCell != null)){
-                if (gameState.selectedCell.isInitial()) return; // don't change initial set cells
+            if (gameState.isNotFinished() && (gameState.getSelectedCell() != null)){
+                if (gameState.getSelectedCell().isInitial()) return; // don't change initial set cells
 
-                CellModel selectedCellModel = gameState.selectedCell;
+                CellModel selectedCellModel = gameState.getSelectedCell();
 
                 if ( numberAction == NumberAction.SET_CANDIDATE){ // toggleCellCandidate value
                     if (selectedCellModel.getValue() == 0){ // act only, if cell is not yet set
@@ -216,12 +216,12 @@ public class MainControl {
                                 if (selectedCellModel.getValue() != selectedCellModel.getSolution()){
                                     gameState.setErrorCounter( gameState.getErrorCounter()+1 );
                                     mainView.controlView.setGameErrors(gameState.getErrorCounter());
-                                    mainView.controlView.setPoints(gameState.getGamePoints(null));
+                                    mainView.controlView.setPoints(gameState.getGamePoints());
                                 } else {
                                     if (gameModel.isSolved( true)){
                                         gameState.setFinished(true);
-
-                                        GameResult gameResult = new GameResult(System.currentTimeMillis(), gameState.getGamePoints(null), GameLevel.get(gameState.gameModel.dimension, gameState.gameModel.difficulty), gameState.getSecondsPlayed(), gameState.gameModel.difficulty);
+                                        GameLevel gameLevel = GameLevel.get(gameModel.dimension, gameModel.difficulty);
+                                        GameResult gameResult = new GameResult(System.currentTimeMillis(), gameState.getGamePoints(), gameLevel, gameState.getSecondsPlayed(), gameModel.difficulty);
                                         String sGameResult =  JSON.toJSONString(gameResult, true);
                                         prefUtil.preferences.edit().putString("result_"+gameResult.timestamp, sGameResult).apply();
                                         showResultDialog(gameResult);
@@ -259,9 +259,9 @@ public class MainControl {
 
 
     void recordUndoStep(){
-        ArrayList<CellModel> undoCells = gameState.getGameModel().getResetChanged(false, gameState.selectedCell);
+        ArrayList<CellModel> undoCells = gameState.getGameModel().getResetChanged(false, gameState.getSelectedCell());
         if (undoCells.size() > 0){
-            gameState.undoList.add(undoCells);
+            gameState.getUndoList().add(undoCells);
         }
     }
 
@@ -275,7 +275,7 @@ public class MainControl {
                         "\nLevel: "+gameResult.gameLevel +
                         "\nDifficulty: "+gameResult.difficulty+
                         "\nPoints: "+gameResult.points +
-                        String.format(Locale.ENGLISH,"\nTime: %d:%02d ",gameState.secondsPlayed/60,gameState.secondsPlayed%60))
+                        String.format(Locale.ENGLISH,"\nTime: %d:%02d ", gameState.getSecondsPlayed() /60, gameState.getSecondsPlayed() %60))
                 .setPositiveButton("OK", (dialog, id) -> dialog.dismiss());
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
@@ -323,11 +323,12 @@ public class MainControl {
 
 
     public void evaluateMark(NumberAction numberAction){
+        GameModel gameModel = gameState.getGameModel();
         if (applyMark(numberAction)) {
-            if (gameState.gameModel.isSolved( true)){
+            if (gameModel.isSolved( true)){
                 gameState.setFinished(true);
 
-                GameResult gameResult = new GameResult(System.currentTimeMillis(), gameState.getGamePoints(null), GameLevel.get(gameState.gameModel.dimension, gameState.gameModel.difficulty), gameState.getSecondsPlayed(), gameState.gameModel.difficulty);
+                GameResult gameResult = new GameResult(System.currentTimeMillis(), gameState.getGamePoints(), GameLevel.get(gameModel.dimension, gameModel.difficulty), gameState.getSecondsPlayed(), gameModel.difficulty);
                 String sGameResult =  JSON.toJSONString(gameResult, true);
                 prefUtil.preferences.edit().putString("result_"+gameResult.timestamp, sGameResult).apply();
                 if (context instanceof Activity) {
@@ -338,12 +339,12 @@ public class MainControl {
         }else {
             gameState.setErrorCounter( gameState.getErrorCounter()+1 );
             mainView.controlView.setGameErrors(gameState.getErrorCounter());
-            mainView.controlView.setPoints(gameState.getGamePoints(null));
+            mainView.controlView.setPoints(gameState.getGamePoints());
         }
     }
 
     private boolean applyMark(NumberAction numberAction){
-        GameModel gameModel = gameState.gameModel;
+        GameModel gameModel = gameState.getGameModel();
         for (int i=1; i<=gameModel.dimension2; i++){
             for (int j=1; j<=gameModel.dimension2; j++){
                 CellModel cellModel = gameModel.getCellModel(i,j);
@@ -355,7 +356,7 @@ public class MainControl {
                     if (numberAction == NumberAction.MARK_CANDIDATE_2){
                         mark = cellModel.getMark2();
                     }
-                    for (int v=1; v<=gameState.gameModel.dimension2; v++){
+                    for (int v=1; v<=gameModel.dimension2; v++){
                         if (cellModel.isCandidateIn(v,mark)){
                             gameState.setSelectedCell(cellModel);
                             mainView.gameView.invalidate();

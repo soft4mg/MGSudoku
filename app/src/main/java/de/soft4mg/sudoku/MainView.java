@@ -84,10 +84,10 @@ public class MainView extends LinearLayout {
 
 
     void initNewGame(GameState gameState, NumbersListener numbersListener ){
-        details = new CommonViewDetails(getContext(), width, height, gameState.gameModel.dimension);
+        details = new CommonViewDetails(getContext(), width, height, gameState.getGameModel().dimension);
 
-        controlView.setPoints(gameState.getGamePoints(null));
-        controlView.setGameErrors(gameState.errorCounter);
+        controlView.setPoints(gameState.getGamePoints());
+        controlView.setGameErrors(gameState.getErrorCounter());
 
         gameView = new GameView(details, gameState);
         gameView.setMinimumWidth(width);

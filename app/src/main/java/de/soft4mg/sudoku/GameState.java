@@ -17,20 +17,23 @@
  */
 package de.soft4mg.sudoku;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameState {
 
-    boolean finished;
-    int errorCounter;
-    long secondsPlayed;
-    GameModel gameModel;
-    CellModel selectedCell;
-    boolean candidatesUsed;
-    ArrayList<List<CellModel>> undoList = new ArrayList<>();
+    private boolean finished;
+    private int errorCounter;
+    private long secondsPlayed;
+    private GameModel gameModel;
+    private CellModel selectedCell;
+    private boolean candidatesUsed;
+    private final ArrayList<List<CellModel>> undoList = new ArrayList<>();
 
 
+    @SuppressWarnings("unused") // required for JSON
     public GameState(){}
 
     public GameState(GameModel gameModel) {
@@ -41,8 +44,8 @@ public class GameState {
         undoList.add( gameModel.getResetChanged(true, null) );
     }
 
-    public boolean isFinished() {
-        return finished;
+    public boolean isNotFinished() {
+        return !finished;
     }
     public void setFinished(boolean finished) {
         this.finished = finished;
@@ -65,9 +68,6 @@ public class GameState {
     public GameModel getGameModel() {
         return gameModel;
     }
-    public void setGameModel(GameModel gameModel) {
-        this.gameModel = gameModel;
-    }
 
     public CellModel getSelectedCell() {
         return selectedCell;
@@ -79,9 +79,6 @@ public class GameState {
     public ArrayList<List<CellModel>> getUndoList() {
         return undoList;
     }
-    public void setUndoList(ArrayList<List<CellModel>> undoList) {
-        this.undoList = undoList;
-    }
 
     public boolean isCandidatesUsed() {
         return candidatesUsed;
@@ -92,36 +89,33 @@ public class GameState {
 
     public boolean isSelected(CellModel cellModel){
         if (selectedCell == null) return false;
-        if ((selectedCell.getRow() == cellModel.getRow()) && (selectedCell.getColumn() == cellModel.getColumn())) return true;
-        return false;
+        return (selectedCell.getRow() == cellModel.getRow()) && (selectedCell.getColumn() == cellModel.getColumn());
     }
     public boolean isSelectedRowOrColumn(CellModel cellModel){
         if (selectedCell == null) return false;
-        if ((selectedCell.getRow() == cellModel.getRow()) || (selectedCell.getColumn() == cellModel.getColumn())) return true;
-        return false;
+        return (selectedCell.getRow() == cellModel.getRow()) || (selectedCell.getColumn() == cellModel.getColumn());
     }
     public boolean isSelectedValue(int value){
         if (selectedCell == null) return false;
         if (value == 0) return false;
-        if ((selectedCell.getValue() == value)) return true;
-        return false;
+        return selectedCell.getValue() == value;
     }
 
-    int getGamePoints(Integer notUsed){
+    @JSONField(serialize=false)
+    int getGamePoints(){
         int points = gameModel.difficulty * (isCandidatesUsed()?1:2);
         points = points / (errorCounter+1);
         return points;
     }
 
     public void undo(){
-        if (!isFinished() && (undoList.size() > 1)){
+        if (isNotFinished() && (undoList.size() > 1)){
             List<CellModel> undoCellModels = undoList.remove(undoList.size()-1);
             for (CellModel undoCellModel : undoCellModels){
                 CellModel oldCellModel = previous(undoCellModel);
                 gameModel.getCellModel(undoCellModel.getRow(), undoCellModel.getColumn()).copyFrom(oldCellModel);
             }
             if (undoCellModels.size() > 0){
-//                selectedCell = undoCellModels.get(0);
                 selectedCell = gameModel.getCellModel(undoCellModels.get(0).getRow(), undoCellModels.get(0).getColumn());
             }
         }

@@ -42,7 +42,7 @@ public class NumbersView extends RelativeLayout {
         prefUtil = new PrefUtil(textDetails.context);
 
         setBackgroundColor(getResources().getColor(R.color.sd_bg, details.context.getTheme()) );
-        gameModel = gameState.gameModel;
+        gameModel = gameState.getGameModel();
 
         selectedNumberAction = NumberAction.valueOf( prefUtil.getString(R.string.prefNumberAction, NumberAction.SET_NUMBER.name() ) );
         btMap.put(NumberAction.SET_NUMBER, textDetails.createButton(this, 0,0, 25, 15, "SET\nNUMBER", 4f));
