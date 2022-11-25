@@ -67,7 +67,7 @@ public class MainControl {
         this.mainView = mainView;
         context = mainView.getContext();
         prefUtil = new PrefUtil(context);
-        mainView.initControlView(context, controlViewListener);
+        mainView.initControlView(controlViewListener);
         gameState = null;
         initGameMap();
 

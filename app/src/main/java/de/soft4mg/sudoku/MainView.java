@@ -54,10 +54,6 @@ public class MainView extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public MainView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     public void init(Context context){
         width = context.getResources().getDisplayMetrics().widthPixels;
         height = context.getResources().getDisplayMetrics().heightPixels;
@@ -81,7 +77,7 @@ public class MainView extends LinearLayout {
         numberViewArea.setBackgroundColor(0xFFAAFFFF);
     }
 
-    void initControlView(Context context, ControlViewListener controlViewListener){
+    void initControlView(ControlViewListener controlViewListener){
         controlView.setControlViewListener(controlViewListener);
     }
 
@@ -95,6 +91,7 @@ public class MainView extends LinearLayout {
 
         gameView = new GameView(details, gameState);
         gameView.setMinimumWidth(width);
+        //noinspection SuspiciousNameCombination
         gameView.setMinimumHeight(width);
         gameViewArea.removeAllViews();
         gameViewArea.addView(gameView);
