@@ -82,40 +82,4 @@ public class CommonViewDetails {
         return paint;
     }
 
-
-//    float widthPercentToPx(float percent){
-//        return (pxWidth)*percent/100;
-//    }
-//    float heightPercentToPx(float percent){
-//        return (pxHeight - pxWidth)*percent/100;
-//    }
-//
-//    Button createButton(int x, int y, int dx, int dy, String text, float ty){
-//        Button button = new Button(context);
-//        button.setTextSize(TypedValue.COMPLEX_UNIT_PX, heightPercentToPx(ty));
-//        button.setX(widthPercentToPx(x));
-//        button.setY(heightPercentToPx(y));
-//        button.setMinimumWidth((int)widthPercentToPx(dx));
-//        button.setWidth((int)widthPercentToPx(dx));
-//        button.setMinimumHeight((int)heightPercentToPx(dy));
-//        button.setHeight((int)heightPercentToPx(dy));
-//        button.setText(text);
-//        button.setPadding(0,0,0,0);
-//        button.setTextColor( context.getResources().getColor(R.color.sd_tv_text, context.getTheme()) );
-//        return button;
-//    }
-//
-//    void refreshSelected(View view1, View... views){
-//        for (View view : views){
-//            modifyBgColor(view, R.color.sd_tv_unsel);
-//        }
-//        modifyBgColor(view1, R.color.sd_tv_sel);
-//    }
-//    void modifyBgColor(View view, int colorId){
-//        int color = context.getResources().getColor(colorId, context.getTheme());
-//        view.getBackground().mutate().setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC));
-//    }
-//
-//
-
 }

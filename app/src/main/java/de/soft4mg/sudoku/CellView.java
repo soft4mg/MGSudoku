@@ -164,7 +164,7 @@ public class CellView extends AppCompatTextView {
         colorId = cellModel.getRow()==0?R.color.sd_bg:colorId; // for numbersView
         canvas.drawPath(p, details.paintWithColor(details.paintBg, colorId));
     }
-    
+
     private void drawBorder(Canvas canvas){
         Path p = new Path();
         p.moveTo(cBod2, cBod2);
