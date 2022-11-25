@@ -304,7 +304,8 @@ public class MainControl {
                     for (String name : context.getAssets().list("dim"+dim)){
                         GameLevel gameLevel = GameLevel.get(dim, Integer.parseInt( name.split("_")[1] ));
                         assert (gameLevel != null);
-                        gameMap.get(gameLevel.toString()+dim).add("dim"+dim+"/"+name);
+                        ArrayList<String> dimLevelGameList = gameMap.get(gameLevel.toString()+dim);
+                        if (dimLevelGameList != null) dimLevelGameList.add("dim"+dim+"/"+name);
                     }
                 } catch (IOException e) {
                     Log.e("MGS", e.getMessage(), e);
@@ -346,7 +347,7 @@ public class MainControl {
                 if (cellModel.getValue() == 0){ // value not yet set
                     int mark = 0;
                     if (numberAction == NumberAction.MARK_CANDIDATE_1){
-                        mark = cellModel.getMark1();;
+                        mark = cellModel.getMark1();
                     }
                     if (numberAction == NumberAction.MARK_CANDIDATE_2){
                         mark = cellModel.getMark2();
