@@ -25,6 +25,7 @@ public class GameResult {
     public long secondsPlayed;
     public int difficulty;
 
+    @SuppressWarnings("unused") // needed for JSON
     public GameResult(){}
 
     public GameResult(long timestamp, int points, GameLevel gameLevel, long secondsPlayed, int difficulty) {

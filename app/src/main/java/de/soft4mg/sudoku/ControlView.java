@@ -76,7 +76,7 @@ public class ControlView extends RelativeLayout {
         textDetails.createTextView(this, 3, 42, 20, 15, "Points:", 4f);
         tvPoints = textDetails.createTextView(this, 18, 42, 20, 15, "0", 4f);
         textDetails.createTextView(this, 35, 42, 15, 15, "Time:", 4f);
-        tvTime = textDetails.createTextView(this, 47, 42, 15, 15, "23:19", 4f);
+        tvTime = textDetails.createTextView(this, 47, 42, 15, 15, "0:00", 4f);
         textDetails.createTextView(this, 68, 42, 15, 15, "Errors:", 4f);
         tvError = textDetails.createTextView(this, 82, 42, 15, 15, "0", 4f);
 
