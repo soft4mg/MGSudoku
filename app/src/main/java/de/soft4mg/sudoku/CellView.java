@@ -17,6 +17,7 @@
  */
 package de.soft4mg.sudoku;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -26,9 +27,8 @@ import android.preference.PreferenceManager;
 
 import androidx.appcompat.widget.AppCompatTextView;
 
-import java.util.Observable;
-import java.util.Observer;
-
+@SuppressWarnings("IntegerDivisionInFloatingPointContext")
+@SuppressLint("ViewConstructor")
 public class CellView extends AppCompatTextView {
 
     GameState gameState;
@@ -50,7 +50,6 @@ public class CellView extends AppCompatTextView {
         this.details = details;
         this.gameState = gameState;
         this.cellModel = cellModel;
-//        this.cellModel.addObserver(this);
         setTypeface(face);
         setWillNotDraw(false);
         preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -76,14 +75,15 @@ public class CellView extends AppCompatTextView {
     private void drawValue(Canvas canvas){
         int colorId = cellModel.isInitial()?R.color.sd_number_init:R.color.sd_number;
         colorId = ((cellModel.getValue() != cellModel.getSolution())&&(cellModel.getSolution() !=0))?R.color.sd_number_error:colorId;
-        if (!cellModel.isEnabled())
+        if (!cellModel.isEnabled()) {
             colorId = R.color.sd_number_disabled;
-        else colorId = colorId;
+        }
         canvas.drawText(cellModel.getText(),
                 cDim / 2 - details.charWidthL/2,
                 cDim / 2 + details.charDimsL[cellModel.getValue()].height()/2,
                 details.paintWithColor(details.paintTextL, colorId));
     }
+
     private void drawCandidates(Canvas canvas){
         for (int i = 1; i<=(gDim * gDim); i++){
             if (cellModel.isCandidate(i)){
@@ -122,6 +122,7 @@ public class CellView extends AppCompatTextView {
         p.lineTo(x,y);
         canvas.drawPath(p, paint);
     }
+
     private void drawCandidateMark1(Canvas canvas, int candidate, Paint paint){
         float x = 2* cBod2 + ((candidate-1)% gDim)* cDimS;
         float y = 2* cBod2 + ((candidate-1)/ gDim)* cDimS;
@@ -135,6 +136,7 @@ public class CellView extends AppCompatTextView {
         p.lineTo(x,y);
         canvas.drawPath(p, paint);
     }
+
     private void drawCandidateMark2(Canvas canvas, int candidate, Paint paint){
         float x = 2* cBod2 + ((candidate-1)% gDim)* cDimS;
         float y = 2* cBod2 + ((candidate-1)/ gDim)* cDimS;
@@ -162,6 +164,7 @@ public class CellView extends AppCompatTextView {
         colorId = cellModel.getRow()==0?R.color.sd_bg:colorId; // for numbersView
         canvas.drawPath(p, details.paintWithColor(details.paintBg, colorId));
     }
+    
     private void drawBorder(Canvas canvas){
         Path p = new Path();
         p.moveTo(cBod2, cBod2);
@@ -171,16 +174,5 @@ public class CellView extends AppCompatTextView {
         p.lineTo(cBod2, cBod2);
         canvas.drawPath(p, details.paintBorderCell);
     }
-
-
-//    @Override
-//    public void update(Observable observable, Object o) {
-//        if (observable instanceof CellModel) {
-//            CellModel cellModel = (CellModel) observable;
-//            this.invalidate();
-//        }
-//    }
-
-
 
 }
