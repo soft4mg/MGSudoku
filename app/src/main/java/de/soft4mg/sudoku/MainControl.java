@@ -51,7 +51,8 @@ public class MainControl {
     TimerTask ttSecend = new TimerTask() {
         @Override
         public void run() {
-            if (gameState.isNotFinished()){
+            Log.i("MGS", "second "+(gameState.getSecondsPlayed() + 1)+ " finished="+gameState.isFinished());
+            if (!gameState.isFinished()){
                 timer.postDelayed(ttSecend, 1000);
                 gameState.setSecondsPlayed(gameState.getSecondsPlayed() + 1);
                 if (mainView.controlView != null){
@@ -75,7 +76,7 @@ public class MainControl {
 
     public void onResume(){
         String sGameState = prefUtil.getString(R.string.stateGameControl, null);
-
+        Log.i(MainActivity.LABEL, "sGameState="+sGameState);
         if (sGameState!=null) {
             gameState = JSON.parseObject(sGameState, GameState.class);
         }
@@ -183,7 +184,7 @@ public class MainControl {
     NumbersListener numbersListener = new NumbersListener() {
         @Override
         public void numberPressed(int number, NumberAction numberAction) {
-            if (gameState.isNotFinished() && (gameState.getSelectedCell() != null)){
+            if (!gameState.isFinished() && (gameState.getSelectedCell() != null)){
                 if (gameState.getSelectedCell().isInitial()) return; // don't change initial set cells
 
                 CellModel selectedCellModel = gameState.getSelectedCell();

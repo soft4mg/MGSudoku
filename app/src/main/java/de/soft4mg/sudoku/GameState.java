@@ -30,7 +30,7 @@ public class GameState {
     private GameModel gameModel;
     private CellModel selectedCell;
     private boolean candidatesUsed;
-    private final ArrayList<List<CellModel>> undoList = new ArrayList<>();
+    private ArrayList<List<CellModel>> undoList = new ArrayList<>();
 
 
     @SuppressWarnings("unused") // required for JSON
@@ -44,8 +44,9 @@ public class GameState {
         undoList.add( gameModel.getResetChanged(true, null) );
     }
 
-    public boolean isNotFinished() {
-        return !finished;
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted") // needed for JSON
+    public boolean isFinished() {
+        return finished;
     }
     public void setFinished(boolean finished) {
         this.finished = finished;
@@ -68,6 +69,10 @@ public class GameState {
     public GameModel getGameModel() {
         return gameModel;
     }
+    @SuppressWarnings("unused")
+    public void setGameModel(GameModel gameModel) { // needed for JSON
+        this.gameModel = gameModel;
+    }
 
     public CellModel getSelectedCell() {
         return selectedCell;
@@ -78,6 +83,10 @@ public class GameState {
 
     public ArrayList<List<CellModel>> getUndoList() {
         return undoList;
+    }
+    @SuppressWarnings("unused")
+    public void setUndoList(ArrayList<List<CellModel>> undoList) { // needed for JSON
+        this.undoList = undoList;
     }
 
     public boolean isCandidatesUsed() {
@@ -109,7 +118,7 @@ public class GameState {
     }
 
     public void undo(){
-        if (isNotFinished() && (undoList.size() > 1)){
+        if (!isFinished() && (undoList.size() > 1)){
             List<CellModel> undoCellModels = undoList.remove(undoList.size()-1);
             for (CellModel undoCellModel : undoCellModels){
                 CellModel oldCellModel = previous(undoCellModel);
