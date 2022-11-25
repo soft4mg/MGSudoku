@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+@SuppressWarnings({"unused", "UnusedReturnValue", "SameParameterValue"})
 public class PrefUtil {
 
     Context context;
@@ -56,8 +57,8 @@ public class PrefUtil {
     boolean getBoolean(int id){
         return preferences.getBoolean(context.getString(id),false);
     }
-    boolean getBoolean(int id, boolean devValue){
-        return preferences.getBoolean(context.getString(id),devValue);
+    boolean getBoolean(int id, boolean defValue){
+        return preferences.getBoolean(context.getString(id),defValue);
     }
     boolean putBoolean(int id, boolean newValue){
         preferences.edit().putBoolean(context.getString(id),newValue).apply();
