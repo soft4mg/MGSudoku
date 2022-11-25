@@ -20,52 +20,13 @@ package de.soft4mg.sudoku;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Observable;
 
-public class GameModel extends Observable {
+public class GameModel {
 
     int dimension;
     int dimension2;
     public CellModel[] cellModels;
     int difficulty = 0;
-
-    public GameModel(int dimension){
-        this.dimension = dimension;
-        this.dimension2 = dimension * dimension;
-        this.difficulty = 0;
-        cellModels = new CellModel[dimension2*dimension2];
-
-        for (int i = 1; i <= dimension2; i++){
-            for (int j = 1; j <= dimension2; j++) {
-                cellModels[cellIndex(i,j)] = new CellModel(dimension, i, j);
-            }
-        }
-    }
-
-    public GameModel(GameModel gameModel){
-        this.dimension = gameModel.dimension;
-        this.dimension2 = dimension * dimension;
-        this.difficulty = gameModel.difficulty;
-        cellModels = new CellModel[dimension2*dimension2];
-        for (int i = 1; i <= dimension2; i++){
-            for (int j = 1; j <= dimension2; j++) {
-                cellModels[cellIndex(i,j)] = new CellModel(gameModel.getCellModel(i,j));
-            }
-        }
-    }
-
-//    public void copyFrom(GameModel gameModel){
-//        this.dimension = gameModel.dimension;
-//        this.dimension2 = dimension * dimension;
-//        this.difficulty = gameModel.difficulty;
-//        for (int i = 1; i <= dimension2; i++){
-//            for (int j = 1; j <= dimension2; j++) {
-//                cellModels[cellIndex(i,j)].copyFrom(gameModel.getCellModel(i,j));
-//            }
-//        }
-//    }
-
-    public GameModel(){}
 
     public int getDimension(){
         return dimension;
@@ -94,87 +55,44 @@ public class GameModel extends Observable {
      * @return index of corresponding CellModel in cellModels
      */
     public int cellIndex(int row, int column){
-        int idx =  (column-1)*dimension2 + row-1;
-        return idx;
+        return (column-1)*dimension2 + row-1;
     }
 
     public CellModel getCellModel(int row, int column){
-        CellModel cellModel = cellModels[cellIndex(row, column)];
-        return cellModel;
+        return cellModels[cellIndex(row, column)];
     }
 
     public void setValue(CellModel cellModel, int value){
         cellModel.setValue(value);
         unsetCandidatesForCell(cellModel);
-//        Log.d("MGS","GMsV: "+cellModel);
     }
 
 
     public boolean isSolved(boolean correct){
-        String solution = "Solution:\n";
+        StringBuilder solution = new StringBuilder("Solution:\n");
         for (int i = 1; i <= dimension2; i++){
             for (int j = 1; j <= dimension2; j++) {
                 CellModel cellModel = cellModels[cellIndex(i,j)];
                 if (cellModel.getValue() == 0) return false;
                 if (correct && (cellModel.getValue() != cellModel.getSolution())) return false; // if correct is requested, then check against solution value
-                solution += " "+cellModels[cellIndex(i,j)].getText();
+                solution.append(" ").append(cellModels[cellIndex(i, j)].getText());
             }
-            solution += "\n";
+            solution.append("\n");
         }
-        Log.i("MGS", solution);
+        Log.i("MGS", solution.toString());
         return true;
     }
 
-    public boolean logValues(){
-        String solution = "Current Values:\n";
+    public void logValues(){
+        StringBuilder solution = new StringBuilder("Current Values:\n");
         for (int i = 1; i <= dimension2; i++){
             for (int j = 1; j <= dimension2; j++) {
-                CellModel cellModel = cellModels[cellIndex(i,j)];
-                solution += " "+cellModels[cellIndex(i,j)].getText();
+                solution.append(" ").append(cellModels[cellIndex(i, j)].getText());
             }
-            solution += "\n";
+            solution.append("\n");
         }
-        Log.i("MGS", solution);
-        return true;
+        Log.i("MGS", solution.toString());
     }
-
-//    @JSONField(serialize=false)
-//    public boolean isAborted(){
-//        for (int i = 1; i <= dimension2; i++){
-//            for (int j = 1; j <= dimension2; j++) {
-//                CellModel cellModel = cellModels[cellIndex(i,j)];
-//                if ((cellModel.getValue() == 0) && (cellModel.candidates == 0)) {
-//                    Log.w("MGS","Model aborted due to cell "+cellModel);
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
-
-//    int getNumCellSet(){
-//        int num = 0;
-//        for (int i = 1; i <= dimension2; i++){
-//            for (int j = 1; j <= dimension2; j++) {
-//                CellModel cellModel = cellModels[cellIndex(i,j)];
-//                if (cellModel.getValue() != 0) num++;
-//            }
-//        }
-//        return num;
-//    }
-//    CellModel getCellSet(int number){ // assume number 1..getNumCellSet
-//        int num = 0;
-//        for (int i = 1; i <= dimension2; i++){
-//            for (int j = 1; j <= dimension2; j++) {
-//                CellModel cellModel = cellModels[cellIndex(i,j)];
-//                if (cellModel.getValue() != 0) {
-//                    num++;
-//                    if (num == number) return cellModel;
-//                }
-//            }
-//        }
-//        return null;
-//    }
 
     int getNumValue(int value){
         int num = 0;
@@ -187,13 +105,13 @@ public class GameModel extends Observable {
         return num;
     }
 
-    CellModel[] getRowGroup(int row, int column, CellModel[] cellGroup){
+    CellModel[] getRowGroup(int row, CellModel[] cellGroup){
         for (int i=1; i<= dimension2; i++){
             cellGroup[i] = getCellModel(row, i);
         }
         return cellGroup;
     }
-    CellModel[] getColumnGroup(int row, int column, CellModel[] cellGroup){
+    CellModel[] getColumnGroup(int column, CellModel[] cellGroup){
         for (int i=1; i<= dimension2; i++){
             cellGroup[i] = getCellModel(i, column);
         }
@@ -211,7 +129,7 @@ public class GameModel extends Observable {
         return cellGroup;
     }
 
-    public GameModel initCandidates(boolean autoSetCandidates) {
+    public void initCandidates(boolean autoSetCandidates) {
         for (int i = 1; i <= dimension2; i++){
             for (int j = 1; j <= dimension2; j++) {
                 getCellModel(i,j).initCandidates();
@@ -220,11 +138,9 @@ public class GameModel extends Observable {
         if (autoSetCandidates){
             unsetCandidatesForValues();
         }
-        return this;
     }
-    public GameModel initCandidates(){
+    public void initCandidates(){
         initCandidates(true);
-        return this;
     }
 
     public void unsetCandidatesForValues(){
@@ -241,8 +157,8 @@ public class GameModel extends Observable {
         CellModel[] cellGroup = new CellModel[dimension2+1];
         int i = cellModel.getRow();
         int j = cellModel.getColumn();
-        unsetCandidateForCellGroup( getRowGroup(i, j, cellGroup), cellModel.getValue());
-        unsetCandidateForCellGroup( getColumnGroup(i, j, cellGroup), cellModel.getValue());
+        unsetCandidateForCellGroup( getRowGroup(i, cellGroup), cellModel.getValue());
+        unsetCandidateForCellGroup( getColumnGroup(j, cellGroup), cellModel.getValue());
         unsetCandidateForCellGroup( getBoxGroup(i, j, cellGroup), cellModel.getValue());
     }
 
@@ -257,7 +173,6 @@ public class GameModel extends Observable {
         if ((selected != null ) && selected.hasChanged()){
             list.add(new CellModel(selected));
             selected.setChanged(false);
-//            selected.unsetChanged();
         }
         for (int i = 1; i <= dimension2; i++){
             for (int j = 1; j <= dimension2; j++) {
@@ -265,7 +180,6 @@ public class GameModel extends Observable {
                 if (all || cellModel.hasChanged()){
                     list.add(new CellModel(cellModel));
                     cellModel.setChanged(false);
-//                    cellModel.unsetChanged();
                 }
             }
         }
