@@ -25,8 +25,8 @@ import java.util.Random;
 
 public class Permutation {
 
-    public static void permutateRowGroups(GameModel gameModel, int permutationNumber){ // permutationNumber should be 1..6
-        int permutationVector[] = getPermutationVector(permutationNumber, gameModel.dimension);
+    public static void permuteRowGroups(GameModel gameModel, int permutationNumber){ // permutationNumber should be 1..6
+        int[] permutationVector = getPermutationVector(permutationNumber, gameModel.dimension);
         CellModel[] cellModelsClone = new CellModel[gameModel.cellModels.length];
         System.arraycopy(gameModel.cellModels,0,cellModelsClone,0, gameModel.dimension2*gameModel.dimension2);
         for (int i = 1; i <= gameModel.dimension2; i++){
@@ -39,8 +39,8 @@ public class Permutation {
         }
     }
 
-    public static void permutateRowGroup(GameModel gameModel, int grIdx, int permutationNumber){ // grIdx should be 1..3/1..4; permutationNumber should be 1..6/1..24
-        int permutationVector[] = getPermutationVector(permutationNumber, gameModel.dimension);
+    public static void permuteRowGroup(GameModel gameModel, int grIdx, int permutationNumber){ // grIdx should be 1..3/1..4; permutationNumber should be 1..6/1..24
+        int[] permutationVector = getPermutationVector(permutationNumber, gameModel.dimension);
         CellModel[] cellModelsClone = new CellModel[gameModel.cellModels.length];
         System.arraycopy(gameModel.cellModels,0,cellModelsClone,0, gameModel.dimension2*gameModel.dimension2);
         for (int i = 1; i <= gameModel.dimension2; i++){
@@ -57,8 +57,8 @@ public class Permutation {
     }
 
 
-    public static void permutateColGroups(GameModel gameModel, int permutationNumber){ // permutationNumber should be 1..6
-        int permutationVector[] = getPermutationVector(permutationNumber, gameModel.dimension);
+    public static void permuteColGroups(GameModel gameModel, int permutationNumber){ // permutationNumber should be 1..6
+        int[] permutationVector = getPermutationVector(permutationNumber, gameModel.dimension);
         CellModel[] cellModelsClone = new CellModel[gameModel.cellModels.length];
         System.arraycopy(gameModel.cellModels,0,cellModelsClone,0, gameModel.dimension2*gameModel.dimension2);
         for (int i = 1; i <= gameModel.dimension2; i++){
@@ -71,9 +71,9 @@ public class Permutation {
         }
     }
 
-    public static void permutateNumbers(GameModel gameModel, long permutationNumber){ // permutationNumber should be 1..9!/1..16!
-        int permutationVector[] = getPermutationVector(permutationNumber, gameModel.dimension2);
-        Log.i("MGS", "XXX permutateNumbers permutationVector="+ Arrays.toString(permutationVector));
+    public static void permuteNumbers(GameModel gameModel, long permutationNumber){ // permutationNumber should be 1..9!/1..16!
+        int[] permutationVector = getPermutationVector(permutationNumber, gameModel.dimension2);
+        Log.i("MGS", "permuteNumbers permutationVector="+ Arrays.toString(permutationVector));
         for (int i = 1; i <= gameModel.dimension2; i++){
             for (int j = 1; j <= gameModel.dimension2; j++) {
 
@@ -94,8 +94,8 @@ public class Permutation {
 
 
 
-    public static void permutateColGroup(GameModel gameModel, int grIdx, int permutationNumber){ // grIdx should be 1..3/1..4; permutationNumber should be 1..6/1..24
-        int permutationVector[] = getPermutationVector(permutationNumber, gameModel.dimension);
+    public static void permuteColGroup(GameModel gameModel, int grIdx, int permutationNumber){ // grIdx should be 1..3/1..4; permutationNumber should be 1..6/1..24
+        int[] permutationVector = getPermutationVector(permutationNumber, gameModel.dimension);
         CellModel[] cellModelsClone = new CellModel[gameModel.cellModels.length];
         System.arraycopy(gameModel.cellModels,0,cellModelsClone,0, gameModel.dimension2*gameModel.dimension2);
         for (int i = 1; i <= gameModel.dimension2; i++){
@@ -113,20 +113,20 @@ public class Permutation {
 
     public static void randomPermutation(GameModel gameModel){
         Random random = new Random(System.currentTimeMillis());
-        int dimFacultaet = (int)facultaet( gameModel.dimension );
-        long dim2Facultaet = facultaet( gameModel.dimension2 );
-        permutateRowGroups(gameModel, random.nextInt( dimFacultaet )+1 );
-        permutateColGroups(gameModel, random.nextInt( dimFacultaet )+1 );
+        int dimFacultaet = (int) faculty( gameModel.dimension );
+        long dim2Facultaet = faculty( gameModel.dimension2 );
+        permuteRowGroups(gameModel, random.nextInt( dimFacultaet )+1 );
+        permuteColGroups(gameModel, random.nextInt( dimFacultaet )+1 );
         for (int i=1; i<=gameModel.dimension; i++){
-            permutateRowGroup(gameModel, i, random.nextInt( dimFacultaet )+1 );
-            permutateColGroup(gameModel, i, random.nextInt( dimFacultaet )+1 );
+            permuteRowGroup(gameModel, i, random.nextInt( dimFacultaet )+1 );
+            permuteColGroup(gameModel, i, random.nextInt( dimFacultaet )+1 );
         }
-        permutateNumbers(gameModel, (long)(random.nextDouble()*dim2Facultaet)+1 );
+        permuteNumbers(gameModel, (long)(random.nextDouble()*dim2Facultaet)+1 );
     }
 
 
     public static int[] getPermutationVector(long permutationNumber, int permutationDimension){
-        int permuationVector[] = new int[permutationDimension+1];
+        int[] permuationVector = new int[permutationDimension+1];
         permutationNumber--; // 0..5 for dim3 and 0..23 for dim4
         ArrayList<Integer> newIdxs = new ArrayList<>();
         for (int idx=1; idx<=permutationDimension; idx++){
@@ -141,7 +141,7 @@ public class Permutation {
         return permuationVector;
     }
 
-    public static long facultaet(int f){
+    public static long faculty(int f){
         long res = 1;
         for (int i=1; i<=f; i++){
             res *=i;

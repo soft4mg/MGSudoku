@@ -63,6 +63,7 @@ public class GameView extends RelativeLayout{
                 cv.setMinimumWidth((int)cellDimension+1);
                 cv.setMinimumHeight((int)cellDimension+1);
                 cv.setOnClickListener(ocl);
+                cv.setContentDescription("Cell row="+i+" column="+j);
                 this.addView(cv);
             }
         }

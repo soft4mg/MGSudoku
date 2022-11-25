@@ -36,8 +36,6 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.TimerTask;
 
-import de.soft4mg.sudoku.R;
-
 public class MainControl {
 
     MainView mainView;
@@ -46,8 +44,6 @@ public class MainControl {
 
     HashMap<String, ArrayList<String>> gameMap = new HashMap<>();
     GameState gameState;
-    ArrayList<GameResult> gameResults;
-
 
     Handler timer = new Handler();
     TimerTask ttSecend = new TimerTask() {
@@ -74,10 +70,6 @@ public class MainControl {
 
     }
 
-    public void onCreate(){
-
-    }
-
     public void onResume(){
         String sGameState = prefUtil.getString(R.string.stateGameControl, null);
         this.gameState = (sGameState==null)?startNewGame():JSON.parseObject(sGameState, GameState.class);
@@ -90,32 +82,28 @@ public class MainControl {
         timer.removeCallbacks(ttSecend);
     }
 
-    public void onDestroy(){
-
-    }
-
-
 
     public GameState startNewGame(){
         try {
             int dimension = prefUtil.getInt( R.string.prefModelDimension, 3);
             GameLevel gameLevel = GameLevel.valueOf( prefUtil.getString(R.string.prefLevel, GameLevel.MEDIUM.toString()) );
             ArrayList<String> gameOptions = gameMap.get(gameLevel.toString()+dimension);
+            assert (gameOptions != null);
             Random random = new Random(System.currentTimeMillis());
             String gameOption = gameOptions.get((int)(random.nextDouble()*gameOptions.size()));
             InputStream is  = context.getAssets().open(gameOption);
-            byte[] data = new byte[is.available()];
-            is.read(data);
-            String sdata = new String(data);
-            GameModel gameModel = JSON.parseObject(sdata, GameModel.class);
-            if (dimension == 4){
-                gameModel.difficulty *= 3;
+            int available = is.available();
+            byte[] data = new byte[available];
+            if (is.read(data) == available){
+                GameModel gameModel = JSON.parseObject(new String(data), GameModel.class);
+                if (dimension == 4){
+                    gameModel.difficulty *= 3;
+                }
+                gameModel.logValues();
+                Permutation.randomPermutation(gameModel);
+                gameModel.logValues();
+                return new GameState(gameModel);
             }
-            gameModel.logValues();
-            Permutation.randomPermutation(gameModel);
-            gameModel.logValues();
-
-            return new GameState(gameModel);
         } catch (IOException e) {
             Log.e("MGS",e.getMessage(),e);
         }
@@ -270,9 +258,7 @@ public class MainControl {
                         "\nDifficulty: "+gameResult.difficulty+
                         "\nPoints: "+gameResult.points +
                         String.format(Locale.ENGLISH,"\nTime: %d:%02d ",gameState.secondsPlayed/60,gameState.secondsPlayed%60))
-                .setPositiveButton("OK", (dialog, id) -> {
-                    dialog.dismiss();
-                });
+                .setPositiveButton("OK", (dialog, id) -> dialog.dismiss());
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
@@ -285,35 +271,31 @@ public class MainControl {
                 .setMessage("Apply marked Numbers for.\n"+mainView.numbersView.getTextOfNumberAction(numberAction))
                 .setPositiveButton("OK", (dialog, id) -> {
                     dialog.dismiss();
-                    new Thread(){
-                        @Override
-                        public void run() {
-                            evaluateMark(numberAction);
-                        }
-                    }.start();
+                    new Thread(() -> evaluateMark(numberAction)).start();
                 })
-                .setNegativeButton("Cancel", (dialog, id) -> {
-                   dialog.dismiss();
-                });
+                .setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
 
 
     private void initGameMap(){
-        try {
+        new Thread(() -> {
             for (int dim=3; dim <= 4; dim++){
-                for (GameLevel gameLevel : GameLevel.values()){
-                    gameMap.put(gameLevel.toString()+dim,new ArrayList<>());
-                }
-                for (String name : context.getAssets().list("dim"+dim)){
-                    GameLevel gameLevel = GameLevel.get(dim, Integer.parseInt( name.split("_")[1] ));
-                    gameMap.get(gameLevel.toString()+dim).add("dim"+dim+"/"+name);
+                try {
+                    for (GameLevel gameLevel : GameLevel.values()){
+                        gameMap.put(gameLevel.toString()+dim,new ArrayList<>());
+                    }
+                    for (String name : context.getAssets().list("dim"+dim)){
+                        GameLevel gameLevel = GameLevel.get(dim, Integer.parseInt( name.split("_")[1] ));
+                        assert (gameLevel != null);
+                        gameMap.get(gameLevel.toString()+dim).add("dim"+dim+"/"+name);
+                    }
+                } catch (IOException e) {
+                    Log.e("MGS", e.getMessage(), e);
                 }
             }
-        } catch (IOException e) {
-            Log.e("MGS", e.getMessage(), e);
-        }
+        }).start();
 
     }
 
@@ -355,15 +337,11 @@ public class MainControl {
                         if (cellModel.isCandidateIn(v,mark)){
                             gameState.setSelectedCell(cellModel);
                             mainView.gameView.invalidate();
-                            try {
-                                Thread.sleep(300);
-                            } catch (InterruptedException e) {}
+                            WaitUtil.doWait(this, 300, "MGS");
                             gameModel.setValue(cellModel, v);
                             gameState.setSelectedCell(cellModel);
                             mainView.gameView.invalidate();
-                            try {
-                                Thread.sleep(200);
-                            } catch (InterruptedException e) {}
+                            WaitUtil.doWait(this, 200, "MGS");
                             if (cellModel.getSolution() != v){
                                 return false;
                             }
