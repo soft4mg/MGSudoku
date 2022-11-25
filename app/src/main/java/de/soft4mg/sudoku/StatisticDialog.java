@@ -215,7 +215,7 @@ public class StatisticDialog {
                 Log.e("MGS", e.getMessage(), e);
             }
     }
-    
+
     public LocalDate getDay(long millis){
         return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate();
     }

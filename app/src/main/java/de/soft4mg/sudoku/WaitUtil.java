@@ -4,6 +4,7 @@ import android.util.Log;
 
 public class WaitUtil {
 
+    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     public static void doWait(Object object, long millis, String tag){
 
         try {

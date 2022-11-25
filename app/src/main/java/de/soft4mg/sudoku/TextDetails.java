@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import java.util.Collection;
 
+@SuppressWarnings("SameParameterValue")
 public class TextDetails {
 
     Context context;
@@ -79,23 +80,6 @@ public class TextDetails {
         return textView;
     }
 
-    //    TextView createTextView(Context context, int x, int y, int dx, int dy, String text, int ts){
-//        TextView textView = new TextView(context);
-//        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, ts);
-//        textView.setX(x*width/100);
-//        textView.setY(y*height/100);
-//        textView.setMinimumWidth((int)(dx*width/100));
-//        textView.setWidth((int)(dx*width/100));
-//        textView.setMinimumHeight((int)(dy*height/100));
-//        textView.setHeight((int)(dy*height/100));
-//        textView.setText(text);
-//        textView.setPadding(0,0,0,0);
-//        textView.setTextColor( getResources().getColor(R.color.sd_tv_text, context.getTheme()) );
-//        this.addView(textView);
-//        return textView;
-//    }
-
-
     void refreshSelected(View view1, Collection<? extends View> views){
         for (View view : views){
             modifyBgColor(view, R.color.sd_tv_unsel);
@@ -106,7 +90,5 @@ public class TextDetails {
         int color = context.getResources().getColor(colorId, context.getTheme());
         view.getBackground().mutate().setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC));
     }
-
-
 
 }
