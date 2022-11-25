@@ -19,17 +19,17 @@ package de.soft4mg.sudoku;
 
 public interface ControlViewListener {
 
-    public void newGameRequested(int dimension, GameLevel gameLevel);
+    void newGameRequested(int dimension, GameLevel gameLevel);
 
-    public void undoRequested();
+    void undoRequested();
 
-    public void repaintRequested();
+    void repaintRequested();
 
-    public void initCandidatesRequested();
+    void initCandidatesRequested();
 
-    public void clearMarkerRequested();
+    void clearMarkerRequested();
 
-    public void showCandidatesRequested(boolean show);
+    void showCandidatesRequested(boolean show);
 
-    public void showHelpRequested();
+    void showHelpRequested();
 }
