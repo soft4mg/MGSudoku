@@ -17,6 +17,7 @@
  */
 package de.soft4mg.sudoku;
 
+import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -25,14 +26,14 @@ import android.widget.RelativeLayout;
 
 import androidx.appcompat.widget.AppCompatTextView;
 
-import de.soft4mg.sudoku.R;
-
+@SuppressLint("ViewConstructor")
 public class GameView extends RelativeLayout{
 
     CommonViewDetails details;
     GameState gameState;
     GameModel gameModel;
 
+    @SuppressWarnings("IntegerDivisionInFloatingPointContext")
     public GameView(CommonViewDetails details, GameState gameState) {
         super(details.context);
         setKeepScreenOn(true);
