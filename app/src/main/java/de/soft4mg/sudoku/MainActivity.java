@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         MainView mainView = (MainView) vg.getChildAt(0);
         mainView.init(this);
         mainView.invalidate();
-        mainControl = new MainControl(mainView);
+        mainControl = new MainControl(this, mainView);
 
 
     }

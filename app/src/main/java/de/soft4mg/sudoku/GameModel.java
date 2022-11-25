@@ -274,8 +274,8 @@ public class GameModel extends Observable {
     public void clearMarker(){
         for (int i = 1; i <= dimension2; i++){
             for (int j = 1; j <= dimension2; j++) {
-                getCellModel(i,j).mark1 = 0;
-                getCellModel(i,j).mark2 = 0 ;
+                getCellModel(i,j).setMark1(0);
+                getCellModel(i,j).setMark2(0);
             }
         }
     }

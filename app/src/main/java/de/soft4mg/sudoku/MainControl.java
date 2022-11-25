@@ -38,11 +38,13 @@ import java.util.TimerTask;
 
 public class MainControl {
 
+    MainActivity mainActivity;
     MainView mainView;
     Context context;
     PrefUtil prefUtil;
 
     HashMap<String, ArrayList<String>> gameMap = new HashMap<>();
+    boolean gameMapLoaded = false;
     GameState gameState;
 
     Handler timer = new Handler();
@@ -60,7 +62,8 @@ public class MainControl {
     };
 
 
-    public MainControl(MainView mainView){
+    public MainControl(MainActivity mainActivity, MainView mainView){
+        this.mainActivity = mainActivity;
         this.mainView = mainView;
         context = mainView.getContext();
         prefUtil = new PrefUtil(context);
@@ -72,8 +75,20 @@ public class MainControl {
 
     public void onResume(){
         String sGameState = prefUtil.getString(R.string.stateGameControl, null);
-        this.gameState = (sGameState==null)?startNewGame():JSON.parseObject(sGameState, GameState.class);
-        onNewGameState();
+        if (sGameState==null){
+            new Thread(() -> {
+                synchronized (this){
+                    while (!gameMapLoaded){
+                        WaitUtil.doWait(this, 1000, "MGS");
+                    }
+                }
+                gameState = startNewGame();
+                mainActivity.runOnUiThread(this::onNewGameState);
+            }).start();
+        } else {
+            gameState = JSON.parseObject(sGameState, GameState.class);
+            onNewGameState();
+        }
     }
 
     public void onPause(){
@@ -177,13 +192,13 @@ public class MainControl {
                 } if ( numberAction == NumberAction.MARK_CANDIDATE_1){ // toggleCellCandidate value
                     if (selectedCellModel.getValue() == 0){ // act only, if cell is not yet set
                         if (selectedCellModel.isCandidate(number)){ // ... and number pressed is a candiate
-                            selectedCellModel.mark1 = selectedCellModel.toggleCandidateIn(number, selectedCellModel.mark1);
+                            selectedCellModel.setMark1( selectedCellModel.toggleCandidateIn(number, selectedCellModel.getMark1()) );
                         }
                     }
                 } if ( numberAction == NumberAction.MARK_CANDIDATE_2){ // toggleCellCandidate value
                     if (selectedCellModel.getValue() == 0){ // act only, if cell is not yet set
                         if (selectedCellModel.isCandidate(number)){ // ... and number pressed is a candiate
-                            selectedCellModel.mark2 = selectedCellModel.toggleCandidateIn(number, selectedCellModel.mark2);
+                            selectedCellModel.setMark2( selectedCellModel.toggleCandidateIn(number, selectedCellModel.getMark2()) );
                         }
                     }
                 } else if ( numberAction == NumberAction.SET_NUMBER){
@@ -295,8 +310,11 @@ public class MainControl {
                     Log.e("MGS", e.getMessage(), e);
                 }
             }
+            gameMapLoaded = true;
+            synchronized (this){
+                notifyAll();
+            }
         }).start();
-
     }
 
 
@@ -328,10 +346,10 @@ public class MainControl {
                 if (cellModel.getValue() == 0){ // value not yet set
                     int mark = 0;
                     if (numberAction == NumberAction.MARK_CANDIDATE_1){
-                        mark = cellModel.mark1;
+                        mark = cellModel.getMark1();;
                     }
                     if (numberAction == NumberAction.MARK_CANDIDATE_2){
-                        mark = cellModel.mark2;
+                        mark = cellModel.getMark2();
                     }
                     for (int v=1; v<=gameState.gameModel.dimension2; v++){
                         if (cellModel.isCandidateIn(v,mark)){

@@ -91,10 +91,10 @@ public class CellView extends AppCompatTextView implements Observer {
                     if (gameState.isSelectedValue(i)){
                         drawCandidateSquare(canvas, i, details.paintWithColor(details.paintBg, R.color.sd_bg_sel_value));
                     }
-                    if (cellModel.isCandidateIn(i,cellModel.mark1)){
+                    if (cellModel.isCandidateIn(i,cellModel.getMark1())){
                         drawCandidateMark2(canvas, i, details.paintWithColor(details.paintBg, R.color.sd_candidate_mark_blue));
                     }
-                    if (cellModel.isCandidateIn(i,cellModel.mark2)){
+                    if (cellModel.isCandidateIn(i,cellModel.getMark2())){
                         drawCandidateMark1(canvas, i, details.paintWithColor(details.paintBg, R.color.sd_candidate_mark_green));
                     }
                     canvas.drawText(CellModel.getText(i),

@@ -39,9 +39,9 @@ public class CellModel extends Observable {
     @JSONField(name="Sol", ordinal=6)
     int solution = 0;
     @JSONField(name="Mark1", ordinal=7)
-    int mark1 = 0;
+    private int mark1 = 0;
     @JSONField(name="Mark2", ordinal=8)
-    int mark2 = 0;
+    private int mark2 = 0;
     @JSONField(serialize=false)
     boolean enabled = true;
 
@@ -60,6 +60,8 @@ public class CellModel extends Observable {
         candidates = cellModel.candidates;
         initial = cellModel.initial;
         solution = cellModel.solution;
+        mark1 = cellModel.getMark1();
+        mark2 = cellModel.getMark2();
     }
     public CellModel(){}
 
@@ -69,6 +71,8 @@ public class CellModel extends Observable {
             candidates = cellModel.candidates;
             initial = cellModel.initial;
             solution = cellModel.solution;
+            mark1 = cellModel.getMark1();
+            mark2 = cellModel.getMark2();
             unsetChanged();
         }
     }
@@ -110,7 +114,10 @@ public class CellModel extends Observable {
     }
 
     public void setMark1(int mark1) {
-        this.mark1 = mark1;
+        if (this.mark1 != mark1){
+            this.mark1 = mark1;
+            this.setChanged();
+        }
     }
 
     public int getMark2() {
@@ -118,7 +125,10 @@ public class CellModel extends Observable {
     }
 
     public void setMark2(int mark2) {
-        this.mark2 = mark2;
+        if (this.mark2 != mark2){
+            this.mark2 = mark2;
+            this.setChanged();
+        }
     }
 
     public int getValue(){
@@ -258,6 +268,8 @@ public class CellModel extends Observable {
                 ", candidates=" + candidates +
                 ", initial=" + initial +
                 ", solution=" + solution +
+                ", mark1=" + mark1 +
+                ", mark2=" + mark2 +
                 '}';
     }
 
