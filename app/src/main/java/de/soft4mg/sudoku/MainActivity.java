@@ -28,8 +28,6 @@ import android.view.ViewGroup;
 import java.io.File;
 import java.io.IOException;
 
-import de.soft4mg.sudoku.R;
-
 public class MainActivity extends AppCompatActivity {
 
     public static String LABEL = "MGS";
@@ -82,7 +80,5 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         pLogcat.destroy();
     }
-
-
 
 }
