@@ -17,6 +17,7 @@
  */
 package de.soft4mg.sudoku;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -40,8 +41,6 @@ import java.time.temporal.WeekFields;
 import java.util.HashMap;
 import java.util.Locale;
 
-import de.soft4mg.sudoku.R;
-
 public class StatisticDialog {
 
     HashMap<LocalDate, Integer> daysMap = new HashMap<>();
@@ -52,11 +51,11 @@ public class StatisticDialog {
 
     AlertDialog alertDialog = null;
 
+    @SuppressLint("SetTextI18n")
     public void showStatisticDialog(Context context){
         AlertDialog.Builder builder = new AlertDialog.Builder(context );
         Context dialogContext = builder.getContext();
 
-        long now = System.currentTimeMillis();
         LocalDate today = LocalDate.now();
 
         evaluateResults(context, today);
@@ -125,7 +124,7 @@ public class StatisticDialog {
 
             createTextView(row, "", 65);
             TextView tvClose = createTextView(row, "CLOSE", 20);
-            tvClose.setOnClickListener(v -> { alertDialog.dismiss(); });
+            tvClose.setOnClickListener(v -> alertDialog.dismiss());
             tvClose.setTypeface(null, Typeface.BOLD);
 
             linearLayout.addView(row);
@@ -168,6 +167,7 @@ public class StatisticDialog {
         table.addView(row);
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void evaluateResults(Context context, LocalDate today){
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -215,13 +215,7 @@ public class StatisticDialog {
                 Log.e("MGS", e.getMessage(), e);
             }
     }
-
-
-
-
-
-    static final long DAY_MILLIS = (1000 * 60 * 60 * 24);
-
+    
     public LocalDate getDay(long millis){
         return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate();
     }
