@@ -24,10 +24,10 @@ public enum GameLevel {
     HARD(151, 400, 301, 600),
     EXTRA(401, 20000,601, 200000);
 
-    int min3;
-    int max3;
-    int min4;
-    int max4;
+    final int min3;
+    final int max3;
+    final int min4;
+    final int max4;
 
     GameLevel(int min3, int max3, int min4, int max4){
         this.min3 = min3;
