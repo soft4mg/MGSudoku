@@ -17,6 +17,7 @@
  */
 package de.soft4mg.sudoku;
 
+import android.annotation.SuppressLint;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -25,8 +26,7 @@ import android.widget.TextView;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.soft4mg.sudoku.R;
-
+@SuppressLint("ViewConstructor")
 public class NumbersView extends RelativeLayout {
 
     TextDetails textDetails;
@@ -36,6 +36,7 @@ public class NumbersView extends RelativeLayout {
     NumberAction selectedNumberAction;
     GameModel gameModel;
 
+    @SuppressWarnings("IntegerDivisionInFloatingPointContext")
     public NumbersView(CommonViewDetails details, TextDetails textDetails, GameState gameState, NumbersListener numbersListener){
         super(details.context);
         this.textDetails = textDetails;
@@ -52,16 +53,18 @@ public class NumbersView extends RelativeLayout {
 
         for (NumberAction numberAction : btMap.keySet()){
             Button button = btMap.get(numberAction);
-            button.setOnClickListener(view -> {
-                selectedNumberAction = numberAction;
-                prefUtil.putString(R.string.prefNumberAction, selectedNumberAction.name());
-                textDetails.refreshSelected( view, btMap.values() );
-                numbersListener.buttonPressed(numberAction);
-            });
-            button.setOnLongClickListener(v -> {
-                numbersListener.buttonPressedLong(numberAction);
-                return true;
-            });
+            if (button != null){
+                button.setOnClickListener(view -> {
+                    selectedNumberAction = numberAction;
+                    prefUtil.putString(R.string.prefNumberAction, selectedNumberAction.name());
+                    textDetails.refreshSelected( view, btMap.values() );
+                    numbersListener.buttonPressed(numberAction);
+                });
+                button.setOnLongClickListener(v -> {
+                    numbersListener.buttonPressedLong(numberAction);
+                    return true;
+                });
+            }
         }
 
         textDetails.refreshSelected( btMap.get( selectedNumberAction ), btMap.values() );
@@ -95,9 +98,7 @@ public class NumbersView extends RelativeLayout {
             }
             cellView.setWidth((int)details.cellDimension+1);
             cellView.setHeight((int)details.cellDimension+1);
-            oclView.setOnClickListener(v -> {
-                numbersListener.numberPressed(cellView.cellModel.getValue(), selectedNumberAction);
-            });
+            oclView.setOnClickListener(v -> numbersListener.numberPressed(cellView.cellModel.getValue(), selectedNumberAction));
             oclView.setOnLongClickListener(v -> {
                 numbersListener.numberPressedLong(cellView.cellModel.getValue(), selectedNumberAction);
                 cellModel.setEnabled(gameModel.getNumValue(value) != gameModel.dimension2);
