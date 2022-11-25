@@ -17,6 +17,8 @@
  */
 package de.soft4mg.sudoku;
 
+import androidx.annotation.NonNull;
+
 import com.alibaba.fastjson.annotation.JSONField;
 
 import java.util.Observable;
@@ -245,6 +247,7 @@ public class CellModel extends Observable {
         clearChanged();
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "CellModel{" +
