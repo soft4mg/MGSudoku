@@ -11,8 +11,8 @@ android {
         applicationId "sudoku.soft4mg.de"
         minSdk 26
         targetSdk 33
-        versionCode 5
-        versionName "1.0.0.pre5"
+        versionCode 6
+        versionName "1.0.0.pre6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
