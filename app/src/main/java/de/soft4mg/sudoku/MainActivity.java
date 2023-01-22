@@ -17,6 +17,7 @@
  */
 package de.soft4mg.sudoku;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,6 +54,10 @@ public class MainActivity extends AppCompatActivity {
         startLogging(getExternalFilesDir(null));
 
         setContentView(R.layout.main_sudoku_layout2);
+
+        // don't change orientation when device is rotated
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+
         ViewGroup vg =  findViewById(android.R.id.content);
         MainView mainView = (MainView) vg.getChildAt(0);
         mainView.init(this);
