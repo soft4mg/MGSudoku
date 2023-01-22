@@ -93,7 +93,7 @@ public class NumbersView extends RelativeLayout {
                 v.setY( textDetails.heightPercentToPx(18) + ((i-1)/rowCount)*((int)(details.cellDimension*1.9))+details.baseBorder -details.cellDimension/2);
                 v.setWidth((int)details.cellDimension*2);
                 v.setHeight((int)(details.cellDimension*1.8));
-                v.setBackgroundColor(0x80E0FFE0);
+//                v.setBackgroundColor(0x80E0FFE0);
                 this.addView(v);
                 oclView = v;
             }
