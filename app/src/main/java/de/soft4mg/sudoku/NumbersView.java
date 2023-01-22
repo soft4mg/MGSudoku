@@ -86,13 +86,14 @@ public class NumbersView extends RelativeLayout {
                 int rowCount = gameModel.dimension2 / 2;
                 int colCount = ((i-1)%rowCount);
                 cellView.setX( colCount* details.cellDimension * 2  +details.baseBorder*colCount + details.cellDimension/2);
-                cellView.setY( textDetails.heightPercentToPx(21) + ((i-1)/rowCount)*(details.cellDimension*2+details.baseBorder) );
+                cellView.setY( textDetails.heightPercentToPx(18) + ((i-1)/rowCount)*((int)(details.cellDimension*1.8)+details.baseBorder) );
 
                 TextView v = new TextView(getContext());
                 v.setX( (((i-1)%rowCount))* details.cellDimension * 2  +details.baseBorder*colCount);
-                v.setY( textDetails.heightPercentToPx(21) + ((i-1)/rowCount)*(details.cellDimension*2+details.baseBorder) -details.cellDimension/2);
+                v.setY( textDetails.heightPercentToPx(18) + ((i-1)/rowCount)*((int)(details.cellDimension*1.9))+details.baseBorder -details.cellDimension/2);
                 v.setWidth((int)details.cellDimension*2);
-                v.setHeight((int)details.cellDimension*2);
+                v.setHeight((int)(details.cellDimension*1.8));
+                v.setBackgroundColor(0x80E0FFE0);
                 this.addView(v);
                 oclView = v;
             }
