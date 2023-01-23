@@ -17,6 +17,7 @@
  */
 package de.soft4mg.sudoku;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -28,18 +29,12 @@ import androidx.annotation.Nullable;
 
 public class MainView extends LinearLayout {
 
+    PrefUtil prefUtil;
     RelativeLayout controlViewArea;
     RelativeLayout gameViewArea;
     RelativeLayout numberViewArea;
 
-    int width;
-    int height;
-    int height1;
-    int height2;
-
     CommonViewDetails details;
-    TextDetails textDetails;
-
     ControlView controlView;
     GameView gameView;
     NumbersView numbersView;
@@ -57,19 +52,13 @@ public class MainView extends LinearLayout {
     }
 
     public void init(Activity context){
-        height = getHeight();
-        width = getWidth();
-        Log.i(MainActivity.LABEL,"XXX init width="+width+" height="+height);
+        prefUtil = new PrefUtil(context);
 
-        height1 = 50*(height-width)/100;
-        height2 = 50*(height-width)/100;
-
-        textDetails = new TextDetails(context, width, height);
 
         controlViewArea = new RelativeLayout(context);
         this.addView(controlViewArea);
         controlViewArea.setBackgroundColor(0xFFFFAAAA);
-        controlView = new ControlView(textDetails, 100, 50);
+        controlView = new ControlView(this.getContext());
         controlViewArea.addView(controlView);
 
         gameViewArea = new RelativeLayout(context);
@@ -85,9 +74,46 @@ public class MainView extends LinearLayout {
         controlView.setControlViewListener(controlViewListener);
     }
 
+    @SuppressLint("DrawAllocation")
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
 
+        if (changed){
+            int width = getWidth();
+            int height = getHeight();
+            Log.i(MainView.class.getName(),"XXX MainView.onLayout width="+width+" height="+height );
+
+            details = new CommonViewDetails(getContext(), width, height, prefUtil.getInt( R.string.prefModelDimension, 3));
+
+            if (controlView != null){
+                controlView.setMinimumWidth(width);
+                controlView.setMinimumHeight((height-width)/2);
+            } else {
+                Log.i(MainView.class.getName(),"controlView == null");
+            }
+            if (gameView != null){
+                gameView.setMinimumWidth(width);
+                //noinspection SuspiciousNameCombination
+                gameView.setMinimumHeight(width);
+            } else {
+                Log.i(MainView.class.getName(),"gameView == null");
+            }
+            if (numbersView != null){
+                numbersView.setMinimumWidth(width);
+                numbersView.setMinimumHeight((height-width)/2);
+            } else {
+                Log.i(MainView.class.getName(),"numbersView == null");
+            }
+
+        }
+
+
+    }
 
     void initNewGame(GameState gameState, NumbersListener numbersListener ){
+        int width = Math.max(1080, getWidth());
+        int height = Math.max(1920,getHeight());
         details = new CommonViewDetails(getContext(), width, height, gameState.getGameModel().dimension);
 
         controlView.setPoints(gameState.getGamePoints());
@@ -100,9 +126,9 @@ public class MainView extends LinearLayout {
         gameViewArea.removeAllViews();
         gameViewArea.addView(gameView);
 
-        numbersView = new NumbersView(details, textDetails, gameState, numbersListener);
+        numbersView = new NumbersView(getContext(), details, gameState, numbersListener);
         numbersView.setMinimumWidth(width);
-        numbersView.setMinimumHeight(height2);
+        numbersView.setMinimumHeight((height-width)/2);
         numberViewArea.removeAllViews();
         numberViewArea.addView(numbersView);
     }

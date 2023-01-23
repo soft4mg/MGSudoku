@@ -181,7 +181,7 @@ public class StatisticDialog {
                     }
                 }
             } catch (Exception e) {
-                Log.e("MGS", e.getMessage(), e);
+                Log.e(StatisticDialog.class.getName(), e.getMessage(), e);
             }
         }
         for (LocalDate ld : daysMap.keySet()){
@@ -212,7 +212,7 @@ public class StatisticDialog {
                     bests[2] = value;
                 }
             } catch (Exception e) {
-                Log.e("MGS", e.getMessage(), e);
+                Log.e(StatisticDialog.class.getName(), e.getMessage(), e);
             }
     }
 

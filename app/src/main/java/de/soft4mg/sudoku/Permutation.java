@@ -73,7 +73,7 @@ public class Permutation {
 
     public static void permuteNumbers(GameModel gameModel, long permutationNumber){ // permutationNumber should be 1..9!/1..16!
         int[] permutationVector = getPermutationVector(permutationNumber, gameModel.dimension2);
-        Log.i("MGS", "permuteNumbers permutationVector="+ Arrays.toString(permutationVector));
+        Log.i(Permutation.class.getName(), "permuteNumbers permutationVector="+ Arrays.toString(permutationVector));
         for (int i = 1; i <= gameModel.dimension2; i++){
             for (int j = 1; j <= gameModel.dimension2; j++) {
 

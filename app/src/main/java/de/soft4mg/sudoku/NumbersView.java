@@ -18,6 +18,8 @@
 package de.soft4mg.sudoku;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -29,27 +31,34 @@ import java.util.Map;
 @SuppressLint("ViewConstructor")
 public class NumbersView extends RelativeLayout {
 
-    TextDetails textDetails;
+    HashMap<View, float[]> viewDetailsMap = new HashMap<>();
+
 
     Map<NumberAction, Button> btMap = new HashMap<>();
     PrefUtil prefUtil;
     NumberAction selectedNumberAction;
     GameModel gameModel;
 
-    @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-    public NumbersView(CommonViewDetails details, TextDetails textDetails, GameState gameState, NumbersListener numbersListener){
+    public NumbersView(Context context, CommonViewDetails details, GameState gameState, NumbersListener numbersListener){
         super(details.context);
-        this.textDetails = textDetails;
-        prefUtil = new PrefUtil(textDetails.context);
+        prefUtil = new PrefUtil(context);
 
         setBackgroundColor(getResources().getColor(R.color.sd_bg, details.context.getTheme()) );
         gameModel = gameState.getGameModel();
 
         selectedNumberAction = NumberAction.valueOf( prefUtil.getString(R.string.prefNumberAction, NumberAction.SET_NUMBER.name() ) );
-        btMap.put(NumberAction.SET_NUMBER, textDetails.createButton(this, 0,0, 25, 15, "SET\nNUMBER", 4f));
-        btMap.put(NumberAction.SET_CANDIDATE, textDetails.createButton(this,25,0, 25, 15, "SET\nCANDIDATE", 4f));
-        btMap.put(NumberAction.MARK_CANDIDATE_1, textDetails.createButton(this,50,0, 25, 15, "MARK\nBLUE", 4f));
-        btMap.put(NumberAction.MARK_CANDIDATE_2, textDetails.createButton(this,75,0, 25, 15, "MARK\nGREEN", 4f));
+        Button btSetNumber = LayoutUtil.createButton(this, "SET\nNUMBER");
+        viewDetailsMap.put(btSetNumber, new float[]{1f,3,23.75f,25,8});
+        btMap.put(NumberAction.SET_NUMBER, btSetNumber);
+        Button btSetCandidate = LayoutUtil.createButton(this, "SET\nCANDIDATE");
+        viewDetailsMap.put(btSetCandidate, new float[]{25.75f,3,23.75f,25,8});
+        btMap.put(NumberAction.SET_CANDIDATE, btSetCandidate);
+        Button btMarkBlue = LayoutUtil.createButton(this, "MARK\nBLUE");
+        viewDetailsMap.put(btMarkBlue, new float[]{50.5f,3,23.75f,25,8});
+        btMap.put(NumberAction.MARK_CANDIDATE_1, btMarkBlue);
+        Button btMarkGreen = LayoutUtil.createButton(this, "MARK\nGREEN");
+        viewDetailsMap.put(btMarkGreen, new float[]{75.25f,3,23.75f,25,8});
+        btMap.put(NumberAction.MARK_CANDIDATE_2, btMarkGreen);
 
         for (NumberAction numberAction : btMap.keySet()){
             Button button = btMap.get(numberAction);
@@ -57,7 +66,7 @@ public class NumbersView extends RelativeLayout {
                 button.setOnClickListener(view -> {
                     selectedNumberAction = numberAction;
                     prefUtil.putString(R.string.prefNumberAction, selectedNumberAction.name());
-                    textDetails.refreshSelected( view, btMap.values() );
+                    LayoutUtil.refreshSelected( view, btMap.values() );
                     numbersListener.buttonPressed(numberAction);
                 });
                 button.setOnLongClickListener(v -> {
@@ -67,7 +76,7 @@ public class NumbersView extends RelativeLayout {
             }
         }
 
-        textDetails.refreshSelected( btMap.get( selectedNumberAction ), btMap.values() );
+        LayoutUtil.refreshSelected( btMap.get( selectedNumberAction ), btMap.values() );
 
         for (int i = 1; i <= gameModel.dimension2; i++){
             final int value = i;
@@ -77,25 +86,20 @@ public class NumbersView extends RelativeLayout {
             final CellView cellView = new CellView(details, gameState, cellModel);
             cellView.setContentDescription("ActionButton "+i);
             View oclView = cellView;
+
             if (gameModel.dimension <= 3){
                 // one row
-                cellView.setX( (i-1)*details.cellDimension + ((i-1)/gameModel.dimension)*details.baseBorder  +2*details.baseBorder);
-                cellView.setY( textDetails.heightPercentToPx(25) );
+                viewDetailsMap.put(cellView, new float[]{(i-1)*11+0.5f, 40, details.cellDimension+1, details.cellDimension+1, 1});
             } else {
                 // two rows
                 int rowCount = gameModel.dimension2 / 2;
                 int colCount = ((i-1)%rowCount);
-                cellView.setX( colCount* details.cellDimension * 2  +details.baseBorder*colCount + details.cellDimension/2);
-                cellView.setY( textDetails.heightPercentToPx(18) + ((i-1)/rowCount)*((int)(details.cellDimension*1.8)+details.baseBorder) );
+                viewDetailsMap.put(cellView, new float[]{(colCount)*12.5f+4, (((i-1)/rowCount)==0)?43:71, details.cellDimension+1, details.cellDimension+1, 1});
 
-                TextView v = new TextView(getContext());
-                v.setX( (((i-1)%rowCount))* details.cellDimension * 2  +details.baseBorder*colCount);
-                v.setY( textDetails.heightPercentToPx(18) + ((i-1)/rowCount)*((int)(details.cellDimension*1.9))+details.baseBorder -details.cellDimension/2);
-                v.setWidth((int)details.cellDimension*2);
-                v.setHeight((int)(details.cellDimension*1.8));
-//                v.setBackgroundColor(0x80E0FFE0);
-                this.addView(v);
-                oclView = v;
+                oclView = new TextView(getContext()); // extra view for clicking (larger than cellview)
+                oclView.setBackgroundColor(0x80B0FFB0);
+                this.addView(oclView);
+                viewDetailsMap.put(oclView, new float[]{(colCount)*12.5f+1, (((i-1)/rowCount)==0)?36:66, 12, 30, 1});
             }
             cellView.setWidth((int)details.cellDimension+1);
             cellView.setHeight((int)details.cellDimension+1);
@@ -109,11 +113,32 @@ public class NumbersView extends RelativeLayout {
         }
     }
 
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        Log.i(NumbersView.class.getName(), "NumbersView.onLayout changed="+changed+" width="+getWidth()+" height="+getHeight());
+        super.onLayout(changed, l, t, r, b);
+
+        if (changed){
+            if ((getWidth() > 0) && (getHeight() > 0)){
+                for (Map.Entry<View, float[]> entry : viewDetailsMap.entrySet()) {
+                    if (entry.getKey() instanceof TextView) {
+                        TextView textView = (TextView) entry.getKey();
+                        LayoutUtil.layout(this, textView, entry.getValue());
+                    }
+                    if (entry.getKey() instanceof CellView) {
+                        CellView cellView = (CellView) entry.getKey();
+                        LayoutUtil.layout(this, cellView, entry.getValue());
+                    }
+                }
+            }
+        }
+    }
+
+
     public void setNumberAction(NumberAction newNumberAction){
         if (newNumberAction != selectedNumberAction){
             selectedNumberAction = newNumberAction;
             prefUtil.putString(R.string.prefNumberAction, selectedNumberAction.name());
-            textDetails.refreshSelected( btMap.get( selectedNumberAction ), btMap.values() );
+            LayoutUtil.refreshSelected( btMap.get( selectedNumberAction ), btMap.values() );
         }
     }
 

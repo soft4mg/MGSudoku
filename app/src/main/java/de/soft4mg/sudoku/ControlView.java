@@ -20,17 +20,22 @@ package de.soft4mg.sudoku;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 @SuppressLint("ViewConstructor")
 public class ControlView extends RelativeLayout {
 
-    TextDetails textDetails;
+
+    HashMap<TextView, float[]> viewDetailsMap = new HashMap<>();
+
     Context context;
 
     PrefUtil prefUtil;
@@ -62,25 +67,26 @@ public class ControlView extends RelativeLayout {
         return "Candidates:\n"+(prefUtil.getBoolean(R.string.prefShowCandidates, true)?"Show":"Hide" );
     }
 
-    public ControlView(TextDetails textDetails, float widthPercent, float heightPercent) {
-        super(textDetails.context);
+    public ControlView(Context context) {
+        super(context);
 
-        this.textDetails = textDetails;
-        context = textDetails.context;
-        prefUtil = new PrefUtil(textDetails.context);
-        setMinimumWidth((int)textDetails.widthPercentToPx(widthPercent));
-        setMinimumHeight((int)textDetails.heightPercentToPx(heightPercent));
+        this.context = context;
+        prefUtil = new PrefUtil(context);
 
-        setBackgroundColor(getResources().getColor(R.color.sd_bg, textDetails.context.getTheme()) );
+        setBackgroundColor(getResources().getColor(R.color.sd_bg, context.getTheme()) );
 
-        textDetails.createTextView(this, 3, 42, 20, 15, "Points:", 4f);
-        tvPoints = textDetails.createTextView(this, 18, 42, 20, 15, "0", 4f);
-        textDetails.createTextView(this, 35, 42, 15, 15, "Time:", 4f);
-        tvTime = textDetails.createTextView(this, 47, 42, 15, 15, "0:00", 4f);
-        textDetails.createTextView(this, 68, 42, 15, 15, "Errors:", 4f);
-        tvError = textDetails.createTextView(this, 82, 42, 15, 15, "0", 4f);
+        viewDetailsMap.put( LayoutUtil.createTextView(this, "Points:"), new float[]{3,84,20,25,8});
+        tvPoints = LayoutUtil.createTextView(this,  "0");
+        viewDetailsMap.put(tvPoints, new float[]{18,84,20,25,8});
+        viewDetailsMap.put( LayoutUtil.createTextView(this, "Time:"), new float[]{35,84,15,25,8});
+        tvTime = LayoutUtil.createTextView(this,  "0:00");
+        viewDetailsMap.put(tvTime, new float[]{47,84,20,25,8});
+        viewDetailsMap.put( LayoutUtil.createTextView(this, "Errors:"), new float[]{68,84,15,25,8});
+        tvError = LayoutUtil.createTextView(this, "0");
+        viewDetailsMap.put(tvError, new float[]{82,84,20,25,8});
 
-        Button btDim = textDetails.createButton(this,1,0, 33, 14, getDimText(), 4f);
+        Button btDim = LayoutUtil.createButton(this,getDimText());
+        viewDetailsMap.put(btDim, new float[]{1,2,32,23,8});
         btDim.setOnClickListener(view -> {
             if (prefUtil.getInt(R.string.prefModelDimension,3) == 3){
                 prefUtil.putInt(R.string.prefModelDimension, 4);
@@ -90,17 +96,20 @@ public class ControlView extends RelativeLayout {
             btDim.setText(getDimText());
         });
         GameLevel gameLevel = GameLevel.valueOf( prefUtil.getString(R.string.prefLevel, GameLevel.MEDIUM.toString()) );
-        Button btLevel = textDetails.createButton(this,34,0, 32, 14, getLevelText(), 4f);
+        Button btLevel = LayoutUtil.createButton(this, getLevelText());
+        viewDetailsMap.put(btLevel, new float[]{34,2,32,23,8});
         btLevel.setOnClickListener(view -> showLevelDialog(btLevel));
 
-        Button btHelp = textDetails.createButton(this,66,0, 33, 14, "Help", 4f);
+        Button btHelp = LayoutUtil.createButton(this, "Help");
+        viewDetailsMap.put(btHelp, new float[]{67,2,32,23,8});
         btHelp.setOnClickListener(v -> controlViewListener.showHelpRequested());
 
 
 
-        Button btNewGame = textDetails.createButton(this,1,12, 33, 14, "New Game", 4f);
+        Button btNewGame = LayoutUtil.createButton(this, "New Game");
+        viewDetailsMap.put(btNewGame, new float[]{1,27,32,23,8});
         btNewGame.setOnClickListener(v -> {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(textDetails.context);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
             alertDialogBuilder.setTitle("New Game");
             alertDialogBuilder
                     .setCancelable(false)
@@ -115,22 +124,43 @@ public class ControlView extends RelativeLayout {
 
 
 
-        btShowCandidates = textDetails.createButton(this,34,12, 32, 14, getShowCandidateText(), 4f);
+        btShowCandidates = LayoutUtil.createButton(this, getShowCandidateText());
+        viewDetailsMap.put(btShowCandidates, new float[]{34,27,32,23,8});
         btShowCandidates.setOnClickListener(view -> {
             onShowCandidatesChanged(!prefUtil.getBoolean(R.string.prefShowCandidates, true));
             controlViewListener.showCandidatesRequested( prefUtil.getBoolean(R.string.prefShowCandidates) );
         });
 
-        Button btStat = textDetails.createButton(this,66,12, 33, 14, "Statistic", 4f);
+        Button btStat = LayoutUtil.createButton(this, "Statistic");
+        viewDetailsMap.put(btStat, new float[]{67,27,32,23,8});
         btStat.setOnClickListener(v -> new StatisticDialog().showStatisticDialog(context));
 
-        textDetails.createButton(this,1,24, 33, 14, "Init\nCandidates", 4f).setOnClickListener(view -> controlViewListener.initCandidatesRequested());
+        Button btInitCandidates = LayoutUtil.createButton(this, "Init\nCandidates");
+        viewDetailsMap.put(btInitCandidates, new float[]{1,52,32,23,8});
+        btInitCandidates.setOnClickListener(view -> controlViewListener.initCandidatesRequested());
 
-        Button btUndo = textDetails.createButton(this,34,24, 32, 14, "Undo", 4f);
+        Button btUndo = LayoutUtil.createButton(this, "Undo");
+        viewDetailsMap.put(btUndo, new float[]{34,52,32,23,8});
         btUndo.setOnClickListener(v -> controlViewListener.undoRequested());
 
-        textDetails.createButton(this,66,24, 33, 14, "Clear\nMarker", 4f).setOnClickListener(view -> controlViewListener.clearMarkerRequested());
+        Button btClearMarker = LayoutUtil.createButton(this, "Clear\nMarker");
+        viewDetailsMap.put(btClearMarker, new float[]{67,52,32,23,8});
+        btClearMarker.setOnClickListener(view -> controlViewListener.clearMarkerRequested());
 
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        Log.i(ControlView.class.getName(),"ControlView.onLayout changed="+changed+" width="+getWidth()+" height="+getHeight());
+        super.onLayout(changed, l, t, r, b);
+
+        if (changed){
+            if ((getWidth() > 0) && (getHeight() > 0)){
+                for (Map.Entry<TextView, float[]> entry : viewDetailsMap.entrySet()){
+                    LayoutUtil.layout(this, entry.getKey(), entry.getValue());
+                }
+            }
+        }
     }
 
     private void onShowCandidatesChanged(boolean newShowCandidates){
@@ -147,7 +177,7 @@ public class ControlView extends RelativeLayout {
     }
 
     public void  showLevelDialog(Button btLevel){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(textDetails.context);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
         GameLevel gameLevel = GameLevel.valueOf( prefUtil.getString(R.string.prefLevel, GameLevel.MEDIUM.toString()) );
         alertDialogBuilder.setTitle("Title");

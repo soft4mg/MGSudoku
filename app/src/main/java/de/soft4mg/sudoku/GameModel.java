@@ -79,7 +79,7 @@ public class GameModel {
             }
             solution.append("\n");
         }
-        Log.i("MGS", solution.toString());
+        Log.i(GameModel.class.getName(), solution.toString());
         return true;
     }
 
@@ -91,7 +91,7 @@ public class GameModel {
             }
             solution.append("\n");
         }
-        Log.i("MGS", solution.toString());
+        Log.i(GameModel.class.getName(), solution.toString());
     }
 
     int getNumValue(int value){

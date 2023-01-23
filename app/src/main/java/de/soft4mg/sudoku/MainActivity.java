@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         startLogging(getExternalFilesDir(null));
 
-        setContentView(R.layout.main_sudoku_layout2);
+        setContentView(R.layout.main_sudoku_layout);
 
         // don't change orientation when device is rotated
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
@@ -61,7 +61,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    void initControl(){
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         ViewGroup vg =  findViewById(android.R.id.content);
         MainView mainView = (MainView) vg.getChildAt(0);
         mainView.init(this);
@@ -70,20 +73,6 @@ public class MainActivity extends AppCompatActivity {
             mainControl = new MainControl(this, mainView);
         }
         mainControl.onResume();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        new Thread(() -> {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            runOnUiThread(this::initControl);
-        }).start();
     }
 
     @Override

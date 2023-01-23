@@ -51,7 +51,7 @@ public class MainControl {
     TimerTask ttSecend = new TimerTask() {
         @Override
         public void run() {
-            Log.i("MGS", "second "+(gameState.getSecondsPlayed() + 1)+ " finished="+gameState.isFinished());
+            Log.i(MainControl.class.getName(), "second "+(gameState.getSecondsPlayed() + 1)+ " finished="+gameState.isFinished());
             if (!gameState.isFinished()){
                 timer.postDelayed(ttSecend, 1000);
                 gameState.setSecondsPlayed(gameState.getSecondsPlayed() + 1);
@@ -76,7 +76,7 @@ public class MainControl {
 
     public void onResume(){
         String sGameState = prefUtil.getString(R.string.stateGameControl, null);
-        Log.i(MainActivity.LABEL, "sGameState="+sGameState);
+        Log.i(MainControl.class.getName(), "sGameState="+sGameState);
         if (sGameState!=null) {
             gameState = JSON.parseObject(sGameState, GameState.class);
         }
@@ -86,7 +86,7 @@ public class MainControl {
             new Thread(() -> {
                 synchronized (this){
                     while (!gameMapLoaded){
-                        WaitUtil.doWait(this, 1000, "MGS");
+                        WaitUtil.doWait(this, 1000, MainControl.class.getName());
                     }
                 }
                 gameState = startNewGame();
@@ -124,7 +124,7 @@ public class MainControl {
                 return new GameState(gameModel);
             }
         } catch (IOException e) {
-            Log.e("MGS",e.getMessage(),e);
+            Log.e(MainControl.class.getName(),e.getMessage(),e);
         }
         return null;
     }
@@ -312,7 +312,7 @@ public class MainControl {
                         if (dimLevelGameList != null) dimLevelGameList.add("dim"+dim+"/"+name);
                     }
                 } catch (IOException e) {
-                    Log.e("MGS", e.getMessage(), e);
+                    Log.e(MainControl.class.getName(), e.getMessage(), e);
                 }
             }
             gameMapLoaded = true;
@@ -361,11 +361,11 @@ public class MainControl {
                         if (cellModel.isCandidateIn(v,mark)){
                             gameState.setSelectedCell(cellModel);
                             mainView.gameView.invalidate();
-                            WaitUtil.doWait(this, 300, "MGS");
+                            WaitUtil.doWait(this, 300, MainControl.class.getName());
                             gameModel.setValue(cellModel, v);
                             gameState.setSelectedCell(cellModel);
                             mainView.gameView.invalidate();
-                            WaitUtil.doWait(this, 200, "MGS");
+                            WaitUtil.doWait(this, 200, MainControl.class.getName());
                             if (cellModel.getSolution() != v){
                                 return false;
                             }
