@@ -58,19 +58,32 @@ public class MainActivity extends AppCompatActivity {
         // don't change orientation when device is rotated
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
+
+    }
+
+    void initControl(){
         ViewGroup vg =  findViewById(android.R.id.content);
         MainView mainView = (MainView) vg.getChildAt(0);
         mainView.init(this);
         mainView.invalidate();
-        mainControl = new MainControl(this, mainView);
-
-
+        if (mainControl == null) {
+            mainControl = new MainControl(this, mainView);
+        }
+        mainControl.onResume();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mainControl.onResume();
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            runOnUiThread(this::initControl);
+        }).start();
     }
 
     @Override

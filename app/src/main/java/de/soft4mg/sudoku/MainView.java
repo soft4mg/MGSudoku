@@ -17,10 +17,8 @@
  */
 package de.soft4mg.sudoku;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.LinearLayout;
@@ -58,18 +56,10 @@ public class MainView extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    @SuppressLint({"InternalInsetResource", "DiscouragedApi"})
-    public void init(Context context){
-        Resources myResources = context.getResources();
-        width = context.getResources().getDisplayMetrics().widthPixels;
-        height = context.getResources().getDisplayMetrics().heightPixels;
-        int idStatusBarHeight = myResources.getIdentifier( "status_bar_height", "dimen", "android");
-        int statusBarHeight = (idStatusBarHeight > 0)?myResources.getDimensionPixelSize(idStatusBarHeight):160;
-        int idNavBarHeight = myResources.getIdentifier( "navigation_bar_height", "dimen", "android");
-        int navigationBarHeight = (idNavBarHeight > 0)?myResources.getDimensionPixelSize(idNavBarHeight):160;
-        Log.i(MainActivity.LABEL,"XXX width="+width+" height="+height+" statusBarHeight="+statusBarHeight+" navigationBarHeight"+navigationBarHeight);
-
-        height -= statusBarHeight;
+    public void init(Activity context){
+        height = getHeight();
+        width = getWidth();
+        Log.i(MainActivity.LABEL,"XXX init width="+width+" height="+height);
 
         height1 = 50*(height-width)/100;
         height2 = 50*(height-width)/100;
