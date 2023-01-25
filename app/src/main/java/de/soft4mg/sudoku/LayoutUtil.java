@@ -18,7 +18,6 @@
 package de.soft4mg.sudoku;
 
 import android.content.Context;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +34,14 @@ public class LayoutUtil {
     static float widthPercentToPx(ViewGroup parent, float percent){
         return (parent.getWidth())*percent/100;
     }
+    static float widthPercentToPx(int parentWidth, float percent){
+        return (parentWidth)*percent/100;
+    }
     static float heightPercentToPx(ViewGroup parent, float percent){
         return parent.getHeight() *percent/100;
+    }
+    static float heightPercentToPx(int parentHeight, float percent){
+        return parentHeight *percent/100;
     }
 
     static Button createButton(ViewGroup parent, String text){
@@ -62,40 +67,25 @@ public class LayoutUtil {
 
     /**
      *
-     * @param parent parent ViewGroup
+     * @param parentWidth parent width
+     * @param parentHeight parent height
      * @param textView textView to layout
      * @param layoutProps 0 - x, 1 - y, 2 - dx, 3 - dy, 4 - ty
      */
-    public static void layout(ViewGroup parent, TextView textView, float[] layoutProps){
-//        Log.i(LayoutUtil.class.getName(), "height="+parent.getHeight()+" "+textView.getText()+ " y="+layoutProps[1]+"% y="+heightPercentToPx(parent, layoutProps[1])+"px dy="+layoutProps[3]+"% dy="+heightPercentToPx(parent, layoutProps[3]));
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, heightPercentToPx(parent, layoutProps[4]));
-        textView.setX(widthPercentToPx(parent, layoutProps[0]));
-        textView.setY(heightPercentToPx(parent, layoutProps[1]));
-        int width = (int)widthPercentToPx(parent, layoutProps[2]);
+    public static void layout(int parentWidth, int parentHeight, TextView textView, float[] layoutProps){
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, heightPercentToPx(parentHeight, layoutProps[4]));
+        textView.setX(widthPercentToPx(parentWidth, layoutProps[0]));
+        textView.setY(heightPercentToPx(parentHeight, layoutProps[1]));
+        int width = (int)widthPercentToPx(parentWidth, layoutProps[2]);
         textView.setMinimumWidth(width);
         textView.setWidth(width);
-        int height = (int)heightPercentToPx(parent, layoutProps[3]);
+        int height = (int)heightPercentToPx(parentHeight, layoutProps[3]);
         if ("".contentEquals(textView.getText())){
             height = Math.min(width, height);
         }
         textView.setMinimumHeight(height);
         textView.setHeight(height);
         textView.setPadding(0,0,0,0);
-    }
-    /**
-     *
-     * @param parent parent ViewGroup
-     * @param cellView cellView to layout
-     * @param layoutProps 0 - x, 1 - y, 2 - dx, 3 - dy, 4 - ty // dx,dy in Pixel, not in percent
-     */
-    public static void layout(ViewGroup parent, CellView cellView, float[] layoutProps){
-        cellView.setX(widthPercentToPx(parent, layoutProps[0]));
-        cellView.setY(heightPercentToPx(parent, layoutProps[1]));
-        cellView.setMinimumWidth((int)layoutProps[2]);
-        cellView.setWidth((int)layoutProps[2]);
-        cellView.setMinimumHeight((int)layoutProps[3]);
-        cellView.setHeight((int)layoutProps[3]);
-        cellView.setPadding(0,0,0,0);
     }
 
     static void refreshSelected(View view1, Collection<? extends View> views){

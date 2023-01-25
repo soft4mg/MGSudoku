@@ -20,4 +20,11 @@
     <string name="stateGameRunning">state_game_running</string>
 
     <string name="stateGameControl">state_game_control</string>
+
+
+
+    <string name="prefDefaultMainWidth">pref_default_main_width</string>
+    <string name="prefDefaultMainHeight">pref_default_main_height</string>
+    <string name="prefLastMainWidth">pref_last_main_width</string>
+    <string name="prefLastMainHeight">pref_last_main_height</string>
 </resources>

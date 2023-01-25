@@ -39,7 +39,7 @@ public class ControlView extends RelativeLayout {
     Context context;
 
     PrefUtil prefUtil;
-    ControlViewListener controlViewListener = null;
+    ControlViewListener controlViewListener;
 
     TextView tvPoints;
     TextView tvError;
@@ -67,10 +67,12 @@ public class ControlView extends RelativeLayout {
         return "Candidates:\n"+(prefUtil.getBoolean(R.string.prefShowCandidates, true)?"Show":"Hide" );
     }
 
-    public ControlView(Context context) {
+    public ControlView(Context context, ControlViewListener controlViewListener) {
         super(context);
+        Log.i(ControlView.class.getName(),"ControlView.constructor start");
 
         this.context = context;
+        this.controlViewListener = controlViewListener;
         prefUtil = new PrefUtil(context);
 
         setBackgroundColor(getResources().getColor(R.color.sd_bg, context.getTheme()) );
@@ -146,20 +148,13 @@ public class ControlView extends RelativeLayout {
         Button btClearMarker = LayoutUtil.createButton(this, "Clear\nMarker");
         viewDetailsMap.put(btClearMarker, new float[]{67,52,32,23,8});
         btClearMarker.setOnClickListener(view -> controlViewListener.clearMarkerRequested());
-
     }
 
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        Log.i(ControlView.class.getName(),"ControlView.onLayout changed="+changed+" width="+getWidth()+" height="+getHeight());
-        super.onLayout(changed, l, t, r, b);
-
-        if (changed){
-            if ((getWidth() > 0) && (getHeight() > 0)){
-                for (Map.Entry<TextView, float[]> entry : viewDetailsMap.entrySet()){
-                    LayoutUtil.layout(this, entry.getKey(), entry.getValue());
-                }
-            }
+    public void layout(int width, int height){
+        this.setMinimumWidth(width);
+        this.setMinimumHeight(height);
+        for (Map.Entry<TextView, float[]> entry : viewDetailsMap.entrySet()){
+            LayoutUtil.layout(width, height, entry.getKey(), entry.getValue());
         }
     }
 
@@ -194,10 +189,6 @@ public class ControlView extends RelativeLayout {
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
-    }
-
-    public void setControlViewListener(ControlViewListener controlViewListener){
-        this.controlViewListener = controlViewListener;
     }
 
 }

@@ -24,26 +24,23 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
 
-import android.view.ViewGroup;
-
 import java.io.File;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static String LABEL = "MGS";
     Process pLogcat;
     MainControl mainControl;
 
     public void startLogging(File logDir){
         try {
-            String cmd = "logcat "+ LABEL+":d *:W -f "+logDir.getAbsolutePath()+"/log.txt -r 10000 -n10";
-            Log.i(LABEL, " Start Logging: "+cmd);
+            String cmd = "logcat *:i -f "+logDir.getAbsolutePath()+"/log.txt -r 10000 -n10";
+            Log.i(MainActivity.class.getName(), " Start Logging: "+cmd);
             pLogcat = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
-            Log.e(LABEL, e.getMessage(), e);
+            Log.e(MainActivity.class.getName(), e.getMessage(), e);
         }
-        Log.i(LABEL," Starting Logger finished.");
+        Log.i(MainActivity.class.getName()," Starting Logger finished.");
 
     }
 
@@ -52,26 +49,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         startLogging(getExternalFilesDir(null));
-
         setContentView(R.layout.main_sudoku_layout);
-
         // don't change orientation when device is rotated
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-
-
+        mainControl = new MainControl(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        ViewGroup vg =  findViewById(android.R.id.content);
-        MainView mainView = (MainView) vg.getChildAt(0);
-        mainView.init(this);
-        mainView.invalidate();
-        if (mainControl == null) {
-            mainControl = new MainControl(this, mainView);
-        }
         mainControl.onResume();
     }
 

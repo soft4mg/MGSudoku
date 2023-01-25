@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 
 public class MainView extends LinearLayout {
 
+    MainViewListener mainViewListener;
     PrefUtil prefUtil;
     RelativeLayout controlViewArea;
     RelativeLayout gameViewArea;
@@ -51,15 +52,13 @@ public class MainView extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public void init(Activity context){
+    public void init(Activity context, MainViewListener mainViewListener){
         prefUtil = new PrefUtil(context);
 
-
+        this.mainViewListener = mainViewListener;
         controlViewArea = new RelativeLayout(context);
         this.addView(controlViewArea);
         controlViewArea.setBackgroundColor(0xFFFFAAAA);
-        controlView = new ControlView(this.getContext());
-        controlViewArea.addView(controlView);
 
         gameViewArea = new RelativeLayout(context);
         this.addView(gameViewArea);
@@ -70,66 +69,46 @@ public class MainView extends LinearLayout {
         numberViewArea.setBackgroundColor(0xFFAAFFFF);
     }
 
-    void initControlView(ControlViewListener controlViewListener){
-        controlView.setControlViewListener(controlViewListener);
-    }
-
     @SuppressLint("DrawAllocation")
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-
         if (changed){
             int width = getWidth();
             int height = getHeight();
-            Log.i(MainView.class.getName(),"XXX MainView.onLayout width="+width+" height="+height );
-
-            details = new CommonViewDetails(getContext(), width, height, prefUtil.getInt( R.string.prefModelDimension, 3));
-
-            if (controlView != null){
-                controlView.setMinimumWidth(width);
-                controlView.setMinimumHeight((height-width)/2);
-            } else {
-                Log.i(MainView.class.getName(),"controlView == null");
-            }
-            if (gameView != null){
-                gameView.setMinimumWidth(width);
-                //noinspection SuspiciousNameCombination
-                gameView.setMinimumHeight(width);
-            } else {
-                Log.i(MainView.class.getName(),"gameView == null");
-            }
-            if (numbersView != null){
-                numbersView.setMinimumWidth(width);
-                numbersView.setMinimumHeight((height-width)/2);
-            } else {
-                Log.i(MainView.class.getName(),"numbersView == null");
-            }
-
+            Log.i(MainView.class.getName(),"MainView.onLayout width="+width+" height="+height );
+            prefUtil.putInt(R.string.prefLastMainWidth, width);
+            prefUtil.putInt(R.string.prefLastMainHeight, height);
+            mainViewListener.layoutRequested();
         }
-
-
     }
 
-    void initNewGame(GameState gameState, NumbersListener numbersListener ){
-        int width = Math.max(1080, getWidth());
-        int height = Math.max(1920,getHeight());
-        details = new CommonViewDetails(getContext(), width, height, gameState.getGameModel().dimension);
+    void initNewGame(GameState gameState, NumbersListener numbersListener, ControlViewListener controlViewListener ){
 
+        int defaultWidth = prefUtil.getInt(R.string.prefDefaultMainWidth, 1080);
+        int width = prefUtil.getInt(R.string.prefLastMainWidth, defaultWidth);
+        int defaultHeight = prefUtil.getInt(R.string.prefDefaultMainHeight, 1920);
+        int height = prefUtil.getInt(R.string.prefLastMainHeight, defaultHeight);
+        int dimension = prefUtil.getInt(R.string.prefModelDimension,3);
+        details = new CommonViewDetails(getContext(), width, height, dimension);
+
+        controlViewArea.removeAllViews();
+        controlView = new ControlView(this.getContext(), controlViewListener);
+        controlView.layout(width, (height-width)/2);
+        controlViewArea.addView(controlView);
         controlView.setPoints(gameState.getGamePoints());
         controlView.setGameErrors(gameState.getErrorCounter());
 
+        gameViewArea.removeAllViews();
         gameView = new GameView(details, gameState);
         gameView.setMinimumWidth(width);
         //noinspection SuspiciousNameCombination
         gameView.setMinimumHeight(width);
-        gameViewArea.removeAllViews();
         gameViewArea.addView(gameView);
 
-        numbersView = new NumbersView(getContext(), details, gameState, numbersListener);
-        numbersView.setMinimumWidth(width);
-        numbersView.setMinimumHeight((height-width)/2);
         numberViewArea.removeAllViews();
+        numbersView = new NumbersView(getContext(), details, gameState, numbersListener);
+        numbersView.layout(width,(height-width)/2);
         numberViewArea.addView(numbersView);
     }
 

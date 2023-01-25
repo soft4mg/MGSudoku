@@ -19,7 +19,6 @@ package de.soft4mg.sudoku;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -97,7 +96,7 @@ public class NumbersView extends RelativeLayout {
                 viewDetailsMap.put(cellView, new float[]{(colCount)*12.5f+4, (((i-1)/rowCount)==0)?43:71, details.cellDimension+1, details.cellDimension+1, 1});
 
                 oclView = new TextView(getContext()); // extra view for clicking (larger than cellview)
-                oclView.setBackgroundColor(0x80B0FFB0);
+//                oclView.setBackgroundColor(0x80B0FFB0);
                 this.addView(oclView);
                 viewDetailsMap.put(oclView, new float[]{(colCount)*12.5f+1, (((i-1)/rowCount)==0)?36:66, 12, 30, 1});
             }
@@ -113,26 +112,16 @@ public class NumbersView extends RelativeLayout {
         }
     }
 
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        Log.i(NumbersView.class.getName(), "NumbersView.onLayout changed="+changed+" width="+getWidth()+" height="+getHeight());
-        super.onLayout(changed, l, t, r, b);
-
-        if (changed){
-            if ((getWidth() > 0) && (getHeight() > 0)){
-                for (Map.Entry<View, float[]> entry : viewDetailsMap.entrySet()) {
-                    if (entry.getKey() instanceof TextView) {
-                        TextView textView = (TextView) entry.getKey();
-                        LayoutUtil.layout(this, textView, entry.getValue());
-                    }
-                    if (entry.getKey() instanceof CellView) {
-                        CellView cellView = (CellView) entry.getKey();
-                        LayoutUtil.layout(this, cellView, entry.getValue());
-                    }
-                }
+    public void layout(int width, int height){
+        this.setMinimumWidth(width);
+        this.setMinimumHeight(height);
+        for (Map.Entry<View, float[]> entry : viewDetailsMap.entrySet()){
+            if (entry.getKey() instanceof TextView) {
+                TextView textView = (TextView) entry.getKey();
+                LayoutUtil.layout(width, height, textView, entry.getValue());
             }
         }
     }
-
 
     public void setNumberAction(NumberAction newNumberAction){
         if (newNumberAction != selectedNumberAction){

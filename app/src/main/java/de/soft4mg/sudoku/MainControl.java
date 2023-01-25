@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 
 import android.content.Intent;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
@@ -48,12 +49,12 @@ public class MainControl {
     GameState gameState;
 
     Handler timer = new Handler();
-    TimerTask ttSecend = new TimerTask() {
+    TimerTask ttSecond = new TimerTask() {
         @Override
         public void run() {
-            Log.i(MainControl.class.getName(), "second "+(gameState.getSecondsPlayed() + 1)+ " finished="+gameState.isFinished());
+            Log.v(MainControl.class.getName(), "second "+(gameState.getSecondsPlayed() + 1)+ " finished="+gameState.isFinished());
             if (!gameState.isFinished()){
-                timer.postDelayed(ttSecend, 1000);
+                timer.postDelayed(ttSecond, 1000);
                 gameState.setSecondsPlayed(gameState.getSecondsPlayed() + 1);
                 if (mainView.controlView != null){
                     mainView.controlView.setGameDuration(gameState.getSecondsPlayed());
@@ -63,12 +64,24 @@ public class MainControl {
     };
 
 
-    public MainControl(MainActivity mainActivity, MainView mainView){
+    public MainControl(MainActivity mainActivity){
         this.mainActivity = mainActivity;
-        this.mainView = mainView;
+
+        this.mainView = mainActivity.findViewById(R.id.main_sudoku_layout);
         context = mainView.getContext();
         prefUtil = new PrefUtil(context);
-        mainView.initControlView(controlViewListener);
+
+        mainView.init(mainActivity, mainViewListener);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            Rect r1 = mainActivity.getWindowManager().getCurrentWindowMetrics().getBounds();
+            prefUtil.putInt(R.string.prefDefaultMainWidth, r1.width());
+            prefUtil.putInt(R.string.prefDefaultMainHeight, r1.height());
+        } else {
+            int w = mainActivity.getResources().getDisplayMetrics().widthPixels;
+            prefUtil.putInt(R.string.prefDefaultMainWidth, w);
+            int h = mainActivity.getResources().getDisplayMetrics().widthPixels;
+            prefUtil.putInt(R.string.prefDefaultMainHeight, h);
+        }
         gameState = null;
         initGameMap();
 
@@ -76,29 +89,21 @@ public class MainControl {
 
     public void onResume(){
         String sGameState = prefUtil.getString(R.string.stateGameControl, null);
-        Log.i(MainControl.class.getName(), "sGameState="+sGameState);
         if (sGameState!=null) {
             gameState = JSON.parseObject(sGameState, GameState.class);
         }
         if (gameState != null){
             onNewGameState();
         } else {
-            new Thread(() -> {
-                synchronized (this){
-                    while (!gameMapLoaded){
-                        WaitUtil.doWait(this, 1000, MainControl.class.getName());
-                    }
-                }
-                gameState = startNewGame();
-                mainActivity.runOnUiThread(this::onNewGameState);
-            }).start();
+            gameState = startNewGame();
+            onNewGameState();
         }
     }
 
     public void onPause(){
         String sGameState =  JSON.toJSONString(gameState, true);
         prefUtil.putString(R.string.stateGameControl, sGameState);
-        timer.removeCallbacks(ttSecend);
+        timer.removeCallbacks(ttSecond);
     }
 
 
@@ -107,21 +112,24 @@ public class MainControl {
             int dimension = prefUtil.getInt( R.string.prefModelDimension, 3);
             GameLevel gameLevel = GameLevel.valueOf( prefUtil.getString(R.string.prefLevel, GameLevel.MEDIUM.toString()) );
             ArrayList<String> gameOptions = gameMap.get(gameLevel.toString()+dimension);
-            assert (gameOptions != null);
-            Random random = new Random(System.currentTimeMillis());
-            String gameOption = gameOptions.get((int)(random.nextDouble()*gameOptions.size()));
-            InputStream is  = context.getAssets().open(gameOption);
-            int available = is.available();
-            byte[] data = new byte[available];
-            if (is.read(data) == available){
-                GameModel gameModel = JSON.parseObject(new String(data), GameModel.class);
-                if (dimension == 4){
-                    gameModel.difficulty *= 3;
+            String gameOption = "dim3/GameModel_0108_21_98982fb4-d357-42fd-bcf8-6993d9525cfe.json"; // defalut for very first game after install
+            if ((gameOptions != null) && (gameOptions.size() > 0)){
+                Random random = new Random(System.currentTimeMillis());
+                gameOption = gameOptions.get((int)(random.nextDouble()*gameOptions.size()));
+            }
+            try (InputStream is  = context.getAssets().open(gameOption)){
+                int available = is.available();
+                byte[] data = new byte[available];
+                if (is.read(data) == available){
+                    GameModel gameModel = JSON.parseObject(new String(data), GameModel.class);
+                    if (dimension == 4){
+                        gameModel.difficulty *= 3;
+                    }
+                    gameModel.logValues();
+                    Permutation.randomPermutation(gameModel);
+                    gameModel.logValues();
+                    return new GameState(gameModel);
                 }
-                gameModel.logValues();
-                Permutation.randomPermutation(gameModel);
-                gameModel.logValues();
-                return new GameState(gameModel);
             }
         } catch (IOException e) {
             Log.e(MainControl.class.getName(),e.getMessage(),e);
@@ -131,11 +139,21 @@ public class MainControl {
 
     void onNewGameState(){
         gameState.setCandidatesUsed( prefUtil.getBoolean(R.string.prefShowCandidates, true) );
-        mainView.initNewGame(gameState, numbersListener);
+        mainView.initNewGame(gameState, numbersListener, controlViewListener);
 
-        timer.removeCallbacks(ttSecend);
-        timer.postDelayed(ttSecend, 1000);
+        timer.removeCallbacks(ttSecond);
+        timer.postDelayed(ttSecond, 1000);
     }
+
+    MainViewListener mainViewListener = new MainViewListener() {
+        @Override
+        public void layoutRequested() {
+            if (gameState != null){
+                // callback is from onLayout -> don't do the real work in this Thread
+                new Thread(() -> mainActivity.runOnUiThread(() -> mainView.initNewGame(gameState, numbersListener, controlViewListener))).start();
+            }
+        }
+    };
 
     ControlViewListener controlViewListener = new ControlViewListener() {
         @Override
@@ -206,7 +224,7 @@ public class MainControl {
                         }
                     }
                 } else if ( numberAction == NumberAction.SET_NUMBER){
-
+                    Log.i(MainControl.class.getName(), "number="+number+" cell="+selectedCellModel);
                     if (selectedCellModel.getValue() ==  number){ // if cell is set to given value, then unset it
                         selectedCellModel.setValue(0);
                     } else {
@@ -300,6 +318,7 @@ public class MainControl {
 
     private void initGameMap(){
         new Thread(() -> {
+            Log.i(MainControl.class.getName(), "initGameMap started");
             for (int dim=3; dim <= 4; dim++){
                 try {
                     for (GameLevel gameLevel : GameLevel.values()){
@@ -319,6 +338,7 @@ public class MainControl {
             synchronized (this){
                 notifyAll();
             }
+            Log.i(MainControl.class.getName(), "initGameMap finished");
         }).start();
     }
 
