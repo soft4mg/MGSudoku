@@ -89,7 +89,7 @@ public class MainView extends LinearLayout {
         int width = prefUtil.getInt(R.string.prefLastMainWidth, defaultWidth);
         int defaultHeight = prefUtil.getInt(R.string.prefDefaultMainHeight, 1920);
         int height = prefUtil.getInt(R.string.prefLastMainHeight, defaultHeight);
-        int dimension = prefUtil.getInt(R.string.prefModelDimension,3);
+        int dimension = gameState.getGameModel().getDimension();
         details = new CommonViewDetails(getContext(), width, height, dimension);
 
         controlViewArea.removeAllViews();
