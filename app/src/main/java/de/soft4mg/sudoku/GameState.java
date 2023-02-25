@@ -29,6 +29,7 @@ public class GameState {
     private long secondsPlayed;
     private GameModel gameModel;
     private CellModel selectedCell;
+    private int selectedValue;
     private boolean candidatesUsed;
     private ArrayList<List<CellModel>> undoList = new ArrayList<>();
 
@@ -79,6 +80,13 @@ public class GameState {
     }
     public void setSelectedCell(CellModel selectedCell) {
         this.selectedCell = selectedCell;
+        if (selectedCell.getValue() != 0){
+            selectedValue = selectedCell.getValue();
+        } else {
+            if (!selectedCell.isCandidate(selectedValue)){
+                selectedValue = 0;
+            }
+        }
     }
 
     public ArrayList<List<CellModel>> getUndoList() {
@@ -107,7 +115,7 @@ public class GameState {
     public boolean isSelectedValue(int value){
         if (selectedCell == null) return false;
         if (value == 0) return false;
-        return selectedCell.getValue() == value;
+        return selectedValue == value;
     }
 
     @JSONField(serialize=false)
