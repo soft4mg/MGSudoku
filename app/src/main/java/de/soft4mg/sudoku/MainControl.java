@@ -227,11 +227,13 @@ public class MainControl {
                     Log.i(MainControl.class.getName(), "number="+number+" cell="+selectedCellModel);
                     if (selectedCellModel.getValue() ==  number){ // if cell is set to given value, then unset it
                         selectedCellModel.setValue(0);
+                        gameState.setSelectedCell(selectedCellModel);
                     } else {
                         GameModel gameModel = gameState.getGameModel();
                         if (selectedCellModel.getValue() !=  selectedCellModel.getSolution()){
                             if (  gameModel.getNumValue(number) < gameModel.dimension2 ){
                                 gameModel.setValue(selectedCellModel, number);
+                                gameState.setSelectedCell(selectedCellModel);
                                 if (selectedCellModel.getValue() != selectedCellModel.getSolution()){
                                     gameState.setErrorCounter( gameState.getErrorCounter()+1 );
                                     mainView.controlView.setGameErrors(gameState.getErrorCounter());
