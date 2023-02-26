@@ -92,10 +92,10 @@ public class CellView extends AppCompatTextView {
                         drawCandidateSquare(canvas, i, details.paintWithColor(details.paintBg, R.color.sd_bg_sel_value));
                     }
                     if (cellModel.isCandidateIn(i,cellModel.getMark1())){
-                        drawCandidateMark2(canvas, i, details.paintWithColor(details.paintBg, R.color.sd_candidate_mark_blue));
+                        drawCandidateMark1(canvas, i, details.paintWithColor(details.paintBg, R.color.sd_candidate_mark_blue));
                     }
                     if (cellModel.isCandidateIn(i,cellModel.getMark2())){
-                        drawCandidateMark1(canvas, i, details.paintWithColor(details.paintBg, R.color.sd_candidate_mark_green));
+                        drawCandidateMark2(canvas, i, details.paintWithColor(details.paintBg, R.color.sd_candidate_mark_green));
                     }
                     canvas.drawText(CellModel.getText(i),
                             2* cBod2 + ((i-1)% gDim)* cDimS + cDimS / 2 - details.charWidthS/2,
@@ -103,7 +103,16 @@ public class CellView extends AppCompatTextView {
                             details.paintTextS);
 
                 } else {
-                    drawCandidateSquare(canvas, i, details.paintWithColor(details.paintBg, gameState.isSelectedValue(i)?R.color.sd_bg_sel_cell:R.color.sd_candidate_small));
+                    int colorId = gameState.isSelected(cellModel)?R.color.sd_bg_sel_value:R.color.sd_bg_sel_cell;
+                    colorId = gameState.isSelectedValue(i)?colorId:R.color.sd_candidate_small;
+                    drawCandidateSquare(canvas, i, details.paintWithColor(details.paintBg, colorId ));
+                    if (cellModel.isCandidateIn(i,cellModel.getMark1())){
+                        drawCandidateMark1(canvas, i, details.paintWithColor(details.paintBg, R.color.sd_candidate_mark_blue));
+                    }
+                    if (cellModel.isCandidateIn(i,cellModel.getMark2())){
+                        drawCandidateMark2(canvas, i, details.paintWithColor(details.paintBg, R.color.sd_candidate_mark_green));
+                    }
+
                 }
 
             }
@@ -127,13 +136,13 @@ public class CellView extends AppCompatTextView {
         float x = 2* cBod2 + ((candidate-1)% gDim)* cDimS;
         float y = 2* cBod2 + ((candidate-1)/ gDim)* cDimS;
 
-        float m = cDimS/10;
+        float m = cDimS/(gDim==3?10:4);
         Path p = new Path();
-        p.moveTo(x,y);
-        p.lineTo(x+2*m,y);
-        p.lineTo(x+ 2*m,y+ cDimS);
-        p.lineTo(x, y+cDimS);
-        p.lineTo(x,y);
+        p.moveTo(x+cDimS, y);
+        p.lineTo(x+cDimS-2*m,y);
+        p.lineTo(x+cDimS- 2*m,y+ cDimS);
+        p.lineTo(x+cDimS,y+cDimS);
+        p.lineTo(x+cDimS, y);
         canvas.drawPath(p, paint);
     }
 
@@ -141,13 +150,13 @@ public class CellView extends AppCompatTextView {
         float x = 2* cBod2 + ((candidate-1)% gDim)* cDimS;
         float y = 2* cBod2 + ((candidate-1)/ gDim)* cDimS;
 
-        float m = cDimS/10;
+        float m = cDimS/(gDim==3?10:4);
         Path p = new Path();
-        p.moveTo(x+cDimS, y);
-        p.lineTo(x+cDimS-2*m,y);
-        p.lineTo(x+cDimS- 2*m,y+ cDimS);
-        p.lineTo(x+cDimS,y+cDimS);
-        p.lineTo(x+cDimS, y);
+        p.moveTo(x,y);
+        p.lineTo(x+2*m,y);
+        p.lineTo(x+ 2*m,y+ cDimS);
+        p.lineTo(x, y+cDimS);
+        p.lineTo(x,y);
         canvas.drawPath(p, paint);
     }
 

@@ -186,11 +186,17 @@ public class GameModel {
         return list;
     }
 
-
-    public void clearMarker(){
+    public void clearMark1(){
         for (int i = 1; i <= dimension2; i++){
             for (int j = 1; j <= dimension2; j++) {
                 getCellModel(i,j).setMark1(0);
+            }
+        }
+    }
+
+    public void clearMark2(){
+        for (int i = 1; i <= dimension2; i++){
+            for (int j = 1; j <= dimension2; j++) {
                 getCellModel(i,j).setMark2(0);
             }
         }

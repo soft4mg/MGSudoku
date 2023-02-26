@@ -183,7 +183,8 @@ public class MainControl {
 
         @Override
         public void clearMarkerRequested() {
-            gameState.getGameModel().clearMarker();
+            gameState.getGameModel().clearMark1();
+            gameState.getGameModel().clearMark2();
             mainView.gameView.invalidate();
         }
 
@@ -304,15 +305,21 @@ public class MainControl {
     public void showAreYouReallySureDialog(NumberAction numberAction){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
-        alertDialogBuilder.setTitle("Apply marked numbers");
+        alertDialogBuilder.setTitle("Action with marked numbers");
         alertDialogBuilder
                 .setCancelable(false)
-                .setMessage("Apply marked Numbers for.\n"+mainView.numbersView.getTextOfNumberAction(numberAction))
-                .setPositiveButton("OK", (dialog, id) -> {
+                .setMessage("for: "+mainView.numbersView.getTextOfNumberAction(numberAction))
+                .setPositiveButton("Apply", (dialog, id) -> {
                     dialog.dismiss();
                     new Thread(() -> evaluateMark(numberAction)).start();
                 })
-                .setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
+                .setNegativeButton("Clear", (dialog, id) -> {
+                    dialog.dismiss();
+                    if (numberAction == NumberAction.MARK_CANDIDATE_1) gameState.getGameModel().clearMark1();
+                    if (numberAction == NumberAction.MARK_CANDIDATE_2) gameState.getGameModel().clearMark2();
+                    mainView.gameView.invalidate();
+                })
+                .setNeutralButton("Cancel", (dialog, id) -> dialog.dismiss());
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
