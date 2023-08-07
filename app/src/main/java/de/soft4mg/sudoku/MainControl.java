@@ -101,9 +101,14 @@ public class MainControl {
     }
 
     public void onPause(){
+        saveState();
+        timer.removeCallbacks(ttSecond);
+    }
+
+    public void saveState(){
         String sGameState =  JSON.toJSONString(gameState, true);
         prefUtil.putString(R.string.stateGameControl, sGameState);
-        timer.removeCallbacks(ttSecond);
+        gameState.getGameModel().logValues();
     }
 
 

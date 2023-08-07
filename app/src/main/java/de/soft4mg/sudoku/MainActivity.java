@@ -23,6 +23,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(this.getClass().getName(),"lc onCreate");
 
         startLogging(getExternalFilesDir(null));
         setContentView(R.layout.main_sudoku_layout);
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        Log.i(this.getClass().getName(),"lc onResume");
         super.onResume();
 
         mainControl.onResume();
@@ -64,15 +67,26 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        Log.i(this.getClass().getName(),"lc onPause");
         mainControl.onPause();
         super.onPause();
+        Log.i(this.getClass().getName(),"lc onPause2");
     }
 
 
     @Override
     protected void onDestroy() {
+        Log.i(this.getClass().getName(),"lc onDestroy");
         super.onDestroy();
         pLogcat.destroy();
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        Log.i(this.getClass().getName(),"lc onWindowFocusChanged");
+        if (!hasFocus){
+            mainControl.saveState();
+        }
+        super.onWindowFocusChanged(hasFocus);
+    }
 }
