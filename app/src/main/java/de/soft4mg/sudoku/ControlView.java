@@ -111,16 +111,18 @@ public class ControlView extends RelativeLayout {
         Button btNewGame = LayoutUtil.createButton(this, "New Game");
         viewDetailsMap.put(btNewGame, new float[]{1,27,32,23,8});
         btNewGame.setOnClickListener(v -> {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-            alertDialogBuilder.setTitle("New Game");
-            alertDialogBuilder
-                    .setCancelable(false)
-                    .setSingleChoiceItems(GameLevel.stringValues(), gameLevel.ordinal(),null)
-                    .setMessage("Don't use candidates and double points ????")
-                    .setPositiveButton("Double Points", (dialog, id) -> startNewGame(false))
-                    .setNegativeButton("No thanks", (dialog, id) -> startNewGame(true));
-            AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
+//            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+//            alertDialogBuilder.setTitle("New Game");
+//            alertDialogBuilder
+//                    .setCancelable(false)
+//                    .setSingleChoiceItems(GameLevel.stringValues(), gameLevel.ordinal(),null)
+//                    .setMessage("Don't use candidates and double points ????")
+//                    .setPositiveButton("Double Points", (dialog, id) -> startNewGame(false))
+//                    .setNegativeButton("No thanks", (dialog, id) -> startNewGame(true));
+//            AlertDialog alertDialog = alertDialogBuilder.create();
+//            alertDialog.show();
+
+            startNewGame(prefUtil.getBoolean(R.string.prefShowCandidates));
 
         });
 
