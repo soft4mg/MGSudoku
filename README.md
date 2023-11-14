@@ -1,2 +1,2 @@
 # MGSudoku
-A free sudoku with no advertising
+A free sudoku with no advertising.
