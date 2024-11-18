@@ -97,7 +97,6 @@ public class ControlView extends RelativeLayout {
             }
             btDim.setText(getDimText());
         });
-        GameLevel gameLevel = GameLevel.valueOf( prefUtil.getString(R.string.prefLevel, GameLevel.MEDIUM.toString()) );
         Button btLevel = LayoutUtil.createButton(this, getLevelText());
         viewDetailsMap.put(btLevel, new float[]{34,2,32,23,8});
         btLevel.setOnClickListener(view -> showLevelDialog(btLevel));
@@ -106,27 +105,9 @@ public class ControlView extends RelativeLayout {
         viewDetailsMap.put(btHelp, new float[]{67,2,32,23,8});
         btHelp.setOnClickListener(v -> controlViewListener.showHelpRequested());
 
-
-
         Button btNewGame = LayoutUtil.createButton(this, "New Game");
         viewDetailsMap.put(btNewGame, new float[]{1,27,32,23,8});
-        btNewGame.setOnClickListener(v -> {
-//            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-//            alertDialogBuilder.setTitle("New Game");
-//            alertDialogBuilder
-//                    .setCancelable(false)
-//                    .setSingleChoiceItems(GameLevel.stringValues(), gameLevel.ordinal(),null)
-//                    .setMessage("Don't use candidates and double points ????")
-//                    .setPositiveButton("Double Points", (dialog, id) -> startNewGame(false))
-//                    .setNegativeButton("No thanks", (dialog, id) -> startNewGame(true));
-//            AlertDialog alertDialog = alertDialogBuilder.create();
-//            alertDialog.show();
-
-            startNewGame(prefUtil.getBoolean(R.string.prefShowCandidates));
-
-        });
-
-
+        btNewGame.setOnClickListener(v -> startNewGame(prefUtil.getBoolean(R.string.prefShowCandidates)) );
 
         btShowCandidates = LayoutUtil.createButton(this, getShowCandidateText());
         viewDetailsMap.put(btShowCandidates, new float[]{34,27,32,23,8});

@@ -17,16 +17,24 @@
  */
 package de.soft4mg.sudoku;
 
+import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
 
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,11 +58,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.i(this.getClass().getName(),"lc onCreate");
 
-        startLogging(getExternalFilesDir(null));
+        startLogging(Objects.requireNonNull(getExternalFilesDir(null)));
         setContentView(R.layout.main_sudoku_layout);
         // don't change orientation when device is rotated
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         mainControl = new MainControl(this);
+        adoptLayout();
     }
 
     @Override
@@ -89,4 +98,35 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onWindowFocusChanged(hasFocus);
     }
+
+    @SuppressLint({"InternalInsetResource", "DiscouragedApi"})
+    private void adoptLayout(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            Resources myResources = this.getResources();
+            int idStatusBarHeight = myResources.getIdentifier("status_bar_height", "dimen", "android");
+            int statusBarHeight = (idStatusBarHeight > 0) ? this.getResources().getDimensionPixelSize(idStatusBarHeight) : dp(24);
+            int idNavBarHeight = myResources.getIdentifier("navigation_bar_height", "dimen", "android");
+            int navigationBarHeight = (idNavBarHeight > 0) ? this.getResources().getDimensionPixelSize(idNavBarHeight) : dp(24);
+
+            LinearLayout ll = findViewById(R.id.main_sudoku_layout);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(0, statusBarHeight, 0, navigationBarHeight);
+            ll.setLayoutParams(params);
+
+            this.getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+            WindowCompat.setDecorFitsSystemWindows(this.getWindow(), false);
+            this.getWindow().setNavigationBarColor(0x00000000);
+
+            int newUiOptions = this.getWindow().getDecorView().getSystemUiVisibility();
+            newUiOptions &= ~View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+            newUiOptions &= ~View.SYSTEM_UI_FLAG_FULLSCREEN;
+            newUiOptions &= ~View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            this.getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
+        }
+    }
+    public int dp(float f){
+        return (int) (f * this.getResources().getDisplayMetrics().density);
+    }
+
+
 }

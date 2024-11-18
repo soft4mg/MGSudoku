@@ -4,16 +4,12 @@
     <application
         android:icon="@drawable/mg_sud"
         android:label="@string/app_name"
-        android:theme="@style/Theme.MGSudoku"
-        android:screenOrientation="portrait"
-        >
+        android:theme="@style/Theme.MGSudoku">
         <activity
             android:name="de.soft4mg.sudoku.MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.MGSudoku.NoActionBar">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

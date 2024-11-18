@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Random;
 import java.util.TimerTask;
 
@@ -118,7 +119,7 @@ public class MainControl {
             GameLevel gameLevel = GameLevel.valueOf( prefUtil.getString(R.string.prefLevel, GameLevel.MEDIUM.toString()) );
             ArrayList<String> gameOptions = gameMap.get(gameLevel.toString()+dimension);
             String gameOption = "dim3/GameModel_0108_21_98982fb4-d357-42fd-bcf8-6993d9525cfe.json"; // defalut for very first game after install
-            if ((gameOptions != null) && (gameOptions.size() > 0)){
+            if ((gameOptions != null) && (!gameOptions.isEmpty())){
                 Random random = new Random(System.currentTimeMillis());
                 gameOption = gameOptions.get((int)(random.nextDouble()*gameOptions.size()));
             }
@@ -287,7 +288,7 @@ public class MainControl {
 
     void recordUndoStep(){
         ArrayList<CellModel> undoCells = gameState.getGameModel().getResetChanged(false, gameState.getSelectedCell());
-        if (undoCells.size() > 0){
+        if (!undoCells.isEmpty()){
             gameState.getUndoList().add(undoCells);
         }
     }
@@ -338,7 +339,7 @@ public class MainControl {
                     for (GameLevel gameLevel : GameLevel.values()){
                         gameMap.put(gameLevel.toString()+dim,new ArrayList<>());
                     }
-                    for (String name : context.getAssets().list("dim"+dim)){
+                    for (String name : Objects.requireNonNull(context.getAssets().list("dim" + dim))){
                         GameLevel gameLevel = GameLevel.get(dim, Integer.parseInt( name.split("_")[1] ));
                         assert (gameLevel != null);
                         ArrayList<String> dimLevelGameList = gameMap.get(gameLevel.toString()+dim);
@@ -366,8 +367,7 @@ public class MainControl {
                 GameResult gameResult = new GameResult(System.currentTimeMillis(), gameState.getGamePoints(), GameLevel.get(gameModel.dimension, gameModel.difficulty), gameState.getSecondsPlayed(), gameModel.difficulty);
                 String sGameResult =  JSON.toJSONString(gameResult, true);
                 prefUtil.preferences.edit().putString("result_"+gameResult.timestamp, sGameResult).apply();
-                if (context instanceof Activity) {
-                    Activity activity = (Activity) context;
+                if (context instanceof Activity activity) {
                     activity.runOnUiThread(() -> showResultDialog(gameResult));
                 }
             }
@@ -415,8 +415,7 @@ public class MainControl {
 
     protected void showHelp(){
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://mg4gh.github.io/MGSudoku/index.html"));
-        if (context instanceof Activity) {
-            Activity activity = (Activity) context;
+        if (context instanceof Activity activity) {
             activity.startActivity(browserIntent);
         }
 

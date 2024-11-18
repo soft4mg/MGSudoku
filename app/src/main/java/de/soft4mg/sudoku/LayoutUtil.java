@@ -28,7 +28,7 @@ import androidx.core.content.res.ResourcesCompat;
 
 import java.util.Collection;
 
-@SuppressWarnings("SameParameterValue")
+@SuppressWarnings("SameParameterValue, unused")
 public class LayoutUtil {
 
     static float widthPercentToPx(ViewGroup parent, float percent){

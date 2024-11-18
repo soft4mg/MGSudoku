@@ -24,6 +24,7 @@ import android.graphics.Path;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatTextView;
 
 @SuppressLint("ViewConstructor")
@@ -45,8 +46,7 @@ public class GameView extends RelativeLayout{
         int mDim2 = mDim * mDim;
 
         View.OnClickListener ocl = view -> {
-            if (view instanceof CellView) {
-                CellView cellView = (CellView) view;
+            if (view instanceof CellView cellView) {
                 gameState.setSelectedCell(cellView.cellModel);
                 invalidate();
             }
@@ -69,7 +69,11 @@ public class GameView extends RelativeLayout{
             }
         }
 
+        AppCompatTextView vBorder = getAppCompatTextView(details);
+        addView(vBorder);
+    }
 
+    private @NonNull AppCompatTextView getAppCompatTextView(CommonViewDetails details) {
         AppCompatTextView vBorder = new AppCompatTextView(details.context){
             @Override
             protected void onDraw(Canvas canvas) {
@@ -90,9 +94,9 @@ public class GameView extends RelativeLayout{
         };
         vBorder.setX(0);
         vBorder.setY(0);
-        vBorder.setWidth((int)details.pxWidth);
-        vBorder.setHeight((int)details.pxWidth);
-        addView(vBorder);
+        vBorder.setWidth((int) details.pxWidth);
+        vBorder.setHeight((int) details.pxWidth);
+        return vBorder;
     }
 
     void drawBorder(Canvas canvas, float x, float y, float d, Paint paint){

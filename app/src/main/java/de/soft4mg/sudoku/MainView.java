@@ -72,11 +72,14 @@ public class MainView extends LinearLayout {
     @SuppressLint("DrawAllocation")
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        Log.i(MainView.class.getName(),"MainView.onLayout l="+l+" t="+t+" r="+r+" b="+b );
         super.onLayout(changed, l, t, r, b);
         if (changed){
             int width = getWidth();
             int height = getHeight();
-            Log.i(MainView.class.getName(),"MainView.onLayout width="+width+" height="+height );
+            int[] pos = new int[2];
+            this.getLocationOnScreen(pos);
+            Log.i(MainView.class.getName(),"MainView.onLayout width="+width+" height="+height +" pos="+pos[0]+" "+pos[1]);
             prefUtil.putInt(R.string.prefLastMainWidth, width);
             prefUtil.putInt(R.string.prefLastMainHeight, height);
             mainViewListener.layoutRequested();
@@ -89,6 +92,7 @@ public class MainView extends LinearLayout {
         int width = prefUtil.getInt(R.string.prefLastMainWidth, defaultWidth);
         int defaultHeight = prefUtil.getInt(R.string.prefDefaultMainHeight, 1920);
         int height = prefUtil.getInt(R.string.prefLastMainHeight, defaultHeight);
+        Log.i(MainView.class.getName(),"MainView.initNewGame width="+width+" height="+height );
         int dimension = gameState.getGameModel().getDimension();
         details = new CommonViewDetails(getContext(), width, height, dimension);
 

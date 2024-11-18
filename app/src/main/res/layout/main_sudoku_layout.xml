@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<de.soft4mg.sudoku.MainView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/main_sudoku_layout"
-    android:orientation="vertical"
+    tools:context="de.soft4mg.sudoku.MainActivity"
+    android:id="@+id/ll_main"
+    android:background="@color/black"
     >
+    <de.soft4mg.sudoku.MainView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/main_sudoku_layout"
+        android:orientation="vertical"
+        >
+    </de.soft4mg.sudoku.MainView>
 
-</de.soft4mg.sudoku.MainView>
+</LinearLayout>
+

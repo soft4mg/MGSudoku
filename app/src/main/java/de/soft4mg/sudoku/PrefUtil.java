@@ -19,7 +19,7 @@ package de.soft4mg.sudoku;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 
 @SuppressWarnings({"unused", "UnusedReturnValue", "SameParameterValue"})
 public class PrefUtil {

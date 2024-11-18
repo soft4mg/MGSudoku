@@ -2,6 +2,8 @@ package de.soft4mg.sudoku;
 
 import android.util.Log;
 
+import java.util.Objects;
+
 public class WaitUtil {
 
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
@@ -12,7 +14,7 @@ public class WaitUtil {
                 object.wait(millis);
             }
         } catch (InterruptedException e) {
-            Log.w(tag, e.getMessage() );
+            Log.w(tag, Objects.requireNonNull(e.getMessage()));
         }
     }
 }

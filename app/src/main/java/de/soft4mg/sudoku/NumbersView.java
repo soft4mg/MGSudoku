@@ -116,8 +116,7 @@ public class NumbersView extends RelativeLayout {
         this.setMinimumWidth(width);
         this.setMinimumHeight(height);
         for (Map.Entry<View, float[]> entry : viewDetailsMap.entrySet()){
-            if (entry.getKey() instanceof TextView) {
-                TextView textView = (TextView) entry.getKey();
+            if (entry.getKey() instanceof TextView textView) {
                 LayoutUtil.layout(width, height, textView, entry.getValue());
             }
         }
@@ -135,8 +134,7 @@ public class NumbersView extends RelativeLayout {
     public void invalidate() {
         super.invalidate();
         for (int cIdx=0; cIdx < getChildCount(); cIdx++){
-            if (getChildAt(cIdx) instanceof CellView) {
-                CellView cellView = (CellView) getChildAt(cIdx);
+            if (getChildAt(cIdx) instanceof CellView cellView) {
                 CellModel cellModel = cellView.cellModel;
                 cellModel.setEnabled(gameModel.getNumValue(cellModel.getValue()) != gameModel.dimension2);
                 cellView.invalidate();

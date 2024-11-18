@@ -132,7 +132,7 @@ public class GameState {
                 CellModel oldCellModel = previous(undoCellModel);
                 gameModel.getCellModel(undoCellModel.getRow(), undoCellModel.getColumn()).copyFrom(oldCellModel);
             }
-            if (undoCellModels.size() > 0){
+            if (!undoCellModels.isEmpty()){
                 selectedCell = gameModel.getCellModel(undoCellModels.get(0).getRow(), undoCellModels.get(0).getColumn());
             }
         }
