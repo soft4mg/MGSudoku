@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
             this.getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
             WindowCompat.setDecorFitsSystemWindows(this.getWindow(), false);
-            this.getWindow().setNavigationBarColor(0x00000000);
+            this.getWindow().setNavigationBarColor(0x00000001);
 
             int newUiOptions = this.getWindow().getDecorView().getSystemUiVisibility();
             newUiOptions &= ~View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
