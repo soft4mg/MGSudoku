@@ -23,6 +23,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
@@ -122,6 +123,11 @@ public class MainActivity extends AppCompatActivity {
             newUiOptions &= ~View.SYSTEM_UI_FLAG_FULLSCREEN;
             newUiOptions &= ~View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
             this.getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
+
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null){
+                actionBar.hide();
+            }
         }
     }
     public int dp(float f){
